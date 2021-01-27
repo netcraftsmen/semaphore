@@ -1,0 +1,50 @@
+#!/usr/bin/env ansible-playbook
+---
+#
+#      Copyright (c) 2020 World Wide Technology, LLC
+#      All rights reserved.
+#
+#      Author: joel.king@wwt.com
+#
+#      Usage: ./install.yml --private-key=~/amazon_web_service/sdk/devnet_sdk_demo.pem --user ubuntu
+#
+#      This playbook installs . . . 
+#
+- name: Install prereqs
+  hosts: localhost
+  gather_facts: no
+
+  vars:
+
+    venv_name: meraki
+    apt_packages:
+      - python3-dev
+      - libpq-dev 
+      - python-dev 
+      - libxml2-dev 
+      - libxslt1-dev 
+      - libldap2-dev 
+      - libsasl2-dev 
+      - libffi-dev
+
+  tasks:
+
+    #
+    #  sudo apt-get -y install ...
+    #
+    - name: Install packages
+      apt:
+        update_cache: yes
+        name: "{{ apt_packages }}"
+        state: present
+      become: yes
+
+    - name: Create virtual environment 
+      shell: "python3 -m venv { venv_name }"
+
+    - name: Install specified python requirements in indicated (virtualenv) e.g. python3 -m pip install meraki
+      pip:
+        requirements: requirements.txt
+        virtualenv: '~/{ venv_name }'
+        executable: pip3
+    

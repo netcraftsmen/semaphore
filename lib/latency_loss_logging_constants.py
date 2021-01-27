@@ -10,5 +10,6 @@ MERAKI = dict(
 
 LOGGING = dict(
     server='3.238.50.209',
-    port='514'
+    port='514',
+    debug=True
     )

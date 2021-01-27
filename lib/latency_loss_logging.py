@@ -17,7 +17,7 @@
 #          https://documentation.meraki.com/MX/Monitoring_and_Reporting/Appliance_Status/MX_Uplink_Settings
 
 import meraki
-import os
+import os, subprocess
 
 try:
     import latency_loss_logging_constants
@@ -27,7 +27,10 @@ except ImportError:
 
 def get_devices(dashboard, firewalls=MERAKI['firewalls']):
     """ 
-        Identify firewall device types of interest
+        Get all the organizations, the networks in each org, and the devices in each network
+
+        Identify firewall device types of interest, we return a list of firewall devices
+        In the Meraki topology, the firewall devices manage the uplink(s) for a network.
     """
     response = []
 
@@ -46,16 +49,38 @@ def get_devices(dashboard, firewalls=MERAKI['firewalls']):
                     response.append(device)
     return response
 
-def get_stats(dashboard, devices, target=MERAKI['target'], timespan=MERAKI['timespan'], uplink=MERAKI['uplink']):
+def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], uplink=MERAKI['uplink']):
+    """
+
+    """
+    response = []
 
     for device in get_devices(dashboard):
-        print(device)
         mgmt = dashboard.devices.getDeviceManagementInterface(device['serial'])
         print(mgmt['ddnsHostnames'])
+
         response = dashboard.devices.getDeviceLossAndLatencyHistory(device['serial'], target, 
                                                                     timespan=timespan, uplink=uplink)
-        for item in response:
-            print(item)
+
+
+
+    return response
+
+def logging(records):
+    """ 
+        Generate (and filter) what is logged and optionally print out.
+    """
+
+    for record in records:
+        if True:
+            msg = record                                   # TODO filter:: Here we can determine if this record should be logged
+
+        cmd =  f'/usr/bin/logger --server {LOGGING['server']} --port {LOGGING['port']} --udp {msg}'
+        returned_output = subprocess.check_output(cmd)
+
+        if LOGGING.get('debug'):
+            print(f'{cmd} \n {msg}')
+            print(f'{returned_output.decode("utf-8")} \n ------')
 
 def main():
 
@@ -66,9 +91,9 @@ def main():
         # by default, the API looks for the API key in environment variable MERAKI_DASHBOARD_API_KEY
         print('please create and specify the API key, e.g. "export MERAKI_DASHBOARD_API_KEY=12345"')
 
-    get_stats(dashboard, get_devices(dashboard))
+    logging(get_stats(dashboard))
 
-    # `logger --server LOGGING['server'] --port LOGGING['port'] --udp "Hello world"`
+    
 
 
 if __name__ == '__main__':
