@@ -61,7 +61,10 @@ def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], u
 
         response = dashboard.devices.getDeviceLossAndLatencyHistory(device['serial'], target, 
                                                                     timespan=timespan, uplink=uplink)
-
+        """
+        for item in response:
+            item.update( {"ddnsHostnames":mgmt['ddnsHostnames']})
+        """
 
 
     return response
