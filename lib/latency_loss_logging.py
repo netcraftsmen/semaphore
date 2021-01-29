@@ -17,12 +17,15 @@
 #          https://documentation.meraki.com/MX/Monitoring_and_Reporting/Appliance_Status/MX_Uplink_Settings
 
 import meraki
-import os, subprocess
+import os
+import subprocess
+import json
 
 try:
-    import latency_loss_logging_constants
+    from latency_loss_logging_constants import MERAKI, LOGGING
 except ImportError:
     print('Could not import constants!')
+    exit()
 
 
 def get_devices(dashboard, firewalls=MERAKI['firewalls']):
@@ -51,21 +54,25 @@ def get_devices(dashboard, firewalls=MERAKI['firewalls']):
 
 def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], uplink=MERAKI['uplink']):
     """
+        Get the Loss and Latency History from the firewall device uplink. 
 
     """
     response = []
 
     for device in get_devices(dashboard):
+        #
+        # Get the management interface and dynamic DNS host names for the public addressing
         mgmt = dashboard.devices.getDeviceManagementInterface(device['serial'])
-        print(mgmt['ddnsHostnames'])
-
-        response = dashboard.devices.getDeviceLossAndLatencyHistory(device['serial'], target, 
+        #
+        # The device stats returns a list of stats, determined by the length of timespan
+        stats = dashboard.devices.getDeviceLossAndLatencyHistory(device['serial'], target, 
                                                                     timespan=timespan, uplink=uplink)
-        """
-        for item in response:
-            item.update( {"ddnsHostnames":mgmt['ddnsHostnames']})
-        """
-
+        #
+        # Put the public hostname in each record
+        for stat in stats:
+            stat.update( {"ddnsHostnames": mgmt['ddnsHostnames']})
+        
+        response.append(stat)
 
     return response
 
@@ -76,10 +83,22 @@ def logging(records):
 
     for record in records:
         if True:
-            msg = record                                   # TODO filter:: Here we can determine if this record should be logged
+            msg = record  # TODO filter:: Here we can determine if this record should be logged
 
-        cmd =  f'/usr/bin/logger --server {LOGGING['server']} --port {LOGGING['port']} --udp {msg}'
+        msg = json.dumps(msg)
+
+        cmd =  f'/usr/bin/logger --server {LOGGING["server"]} --port {LOGGING["port"]} --udp {msg}'
         returned_output = subprocess.check_output(cmd)
+
+        """
+        OSError: [Errno 36] File name too long: "/usr/bin/logger --server 3.238.50.209 --port 514 --udp 
+        {'startTs': '2021-01-29T21:49:00Z', 'endTs': '2021-01-29T21:50:00Z', 'lossPercent': None, 
+        'latencyMs': None, 'ddnsHostnames': {'activeDdnsHostname': 'swisswood-cnrtbtvnkm.dynamic-m.com', 
+        'ddnsHostnameWan1': 'swisswood-cnrtbtvnkm-1.dynamic-m.com', 'ddnsHostnameWan2': 
+        'swisswood-cnrtbtvnkm-2.dynamic-m.com'}}"
+        """
+
+
 
         if LOGGING.get('debug'):
             print(f'{cmd} \n {msg}')
@@ -95,8 +114,6 @@ def main():
         print('please create and specify the API key, e.g. "export MERAKI_DASHBOARD_API_KEY=12345"')
 
     logging(get_stats(dashboard))
-
-    
 
 
 if __name__ == '__main__':
