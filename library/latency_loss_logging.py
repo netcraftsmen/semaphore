@@ -19,7 +19,6 @@
 import meraki
 import os
 import subprocess
-import json
 
 try:
     from latency_loss_logging_constants import MERAKI, LOGGING
@@ -68,9 +67,9 @@ def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], u
         stats = dashboard.devices.getDeviceLossAndLatencyHistory(device['serial'], target, 
                                                                     timespan=timespan, uplink=uplink)
         #
-        # Put the public hostname in each record
+        # Put the public hostname(s) in each record
         for stat in stats:
-            stat.update( {"ddnsHostnames": mgmt['ddnsHostnames']})
+            stat.update( mgmt['ddnsHostnames'] )
         
         response.append(stat)
 
@@ -79,26 +78,24 @@ def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], u
 def logging(records):
     """ 
         Generate (and filter) what is logged and optionally print out.
+
+        {'startTs': '2021-01-29T21:49:00Z', 'endTs': '2021-01-29T21:50:00Z', 'lossPercent': None, 
+        'latencyMs': None, 'activeDdnsHostname': 'swisswood-cnrtbtvnkm.dynamic-m.com', 
+        'ddnsHostnameWan1': 'swisswood-cnrtbtvnkm-1.dynamic-m.com', 'ddnsHostnameWan2': 
+        'swisswood-cnrtbtvnkm-2.dynamic-m.com'}
     """
 
     for record in records:
-        if True:
-            msg = record  # TODO filter:: Here we can determine if this record should be logged
 
-        msg = json.dumps(msg)
+        if True:                                           # TODO ADD TEST to see this record is of interest
+            msg = ''
+            for key, value in record.items():              # Convert to  a string in the form of: key=value
+                msg += f'{str(key)}={str(value)} '
 
-        cmd =  f'/usr/bin/logger --server {LOGGING["server"]} --port {LOGGING["port"]} --udp {msg}'
-        returned_output = subprocess.check_output(cmd)
+        cmd = ['/usr/bin/logger', '--server', f'{LOGGING["server"]}', '--port',
+                f'{LOGGING["port"]}', '--udp', f'"{msg}"']
 
-        """
-        OSError: [Errno 36] File name too long: "/usr/bin/logger --server 3.238.50.209 --port 514 --udp 
-        {'startTs': '2021-01-29T21:49:00Z', 'endTs': '2021-01-29T21:50:00Z', 'lossPercent': None, 
-        'latencyMs': None, 'ddnsHostnames': {'activeDdnsHostname': 'swisswood-cnrtbtvnkm.dynamic-m.com', 
-        'ddnsHostnameWan1': 'swisswood-cnrtbtvnkm-1.dynamic-m.com', 'ddnsHostnameWan2': 
-        'swisswood-cnrtbtvnkm-2.dynamic-m.com'}}"
-        """
-
-
+        returned_output = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
 
         if LOGGING.get('debug'):
             print(f'{cmd} \n {msg}')
