@@ -1,5 +1,8 @@
 #
 #
+# By default, the API looks for the API key in environment variable MERAKI_DASHBOARD_API_KEY
+#
+#  You want to export MERAKI_DASHBOARD_API_KEY=12345
 #
 MERAKI = dict(
     target='8.8.8.8',

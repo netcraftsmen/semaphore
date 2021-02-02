@@ -71,7 +71,7 @@ def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], u
         for stat in stats:
             stat.update( mgmt['ddnsHostnames'] )
         
-        response.append(stat)
+        response.extend(stats)
 
     return response
 
@@ -98,8 +98,8 @@ def logging(records):
         returned_output = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
 
         if LOGGING.get('debug'):
-            print(f'{cmd} \n {msg}')
-            print(f'{returned_output.decode("utf-8")} \n ------')
+            print(f'CMD:{cmd} \n MSG:{msg}')
+            print(f'OUTPUT:{returned_output.decode("utf-8")} \n ------')
 
 def main():
 
