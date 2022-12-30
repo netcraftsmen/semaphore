@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 #
-#     Copyright (c) 2020 World Wide Technology
+#     Copyright (c) 2022
 #     All rights reserved.
 #
 #     author: Joel W. King  @joelwking
@@ -16,16 +16,41 @@
 #      references:
 #          https://documentation.meraki.com/MX/Monitoring_and_Reporting/Appliance_Status/MX_Uplink_Settings
 
-import meraki
+
 import os
 import subprocess
+import json
+import sys
+from uuid import uuid4
+from confluent_kafka import avro, KafkaError, Producer
+from confluent_kafka.admin import AdminClient, NewTopic
+
+import certifi
+
+import meraki
 
 try:
-    from latency_loss_logging_constants import MERAKI, LOGGING
+    from latency_loss_logging_constants import MERAKI, LOGGING, SCHEMA_CONF, PRODUCER_CONF
 except ImportError:
     print('Could not import constants!')
     exit()
 
+
+# TEST DATA, CPU is the KEY, the VALUE is list of dictionaries
+messages = {'cpu': [{'core0': 10},
+                    {'core0': 12},
+                    {'core0': 11},
+                    {'core0': 20}]}
+                    
+def call_back(err, msg):
+    """ 
+        Call back handler
+        p.poll() serves delivery reports (on_delivery) from previous produce() calls
+    """
+    if err is None:
+        print("Produced record to topic {} partition [{}] @ offset {}".format(msg.topic(), msg.partition(), msg.offset()))    
+    else:
+        print("Failed to deliver message: {}".format(err))
 
 def get_devices(dashboard, firewalls=MERAKI['firewalls']):
     """ 
@@ -100,6 +125,37 @@ def logging(records):
         if LOGGING.get('debug'):
             print(f'CMD:{cmd} \n MSG:{msg}')
             print(f'OUTPUT:{returned_output.decode("utf-8")} \n ------')
+
+def producer(topic='basic'):
+    """
+       Topic is defined from GUI
+       https://confluent.cloud/environments/env-9vzp0/clusters/lkc-gd35m/topics
+       Kafka organizes message feeds into categories called topics.
+
+       A topic is an ordered log of events. When an external system 
+       writes an event to Kafka, it is appended to the end of a topic.
+       
+       Each topic can have multiple partitions, in this example, we have the default value of 6 partitions
+       Each partition is a single log file where records are written to it append-only.
+    """
+
+    # Create Producer instance
+    # A producer is an external application (this program) that writes messages to a Kafka cluster
+    producer = Producer(producer_conf)
+
+    for key, values in messages.items():
+        # For two records with the same key, the producer will always choose the same partition
+        record_key = key
+        # In our test data, each key contains a list of dictionaries
+        for value in values:
+            record_value = json.dumps(value)
+            producer.produce(topic, key=record_key, value=record_value, on_delivery=call_back)
+
+            producer.poll(0)  # invoke the on_delivery=call_back function
+
+    producer.flush()  # flush() will block until the previously sent messages are delivered
+    return
+
 
 def main():
 

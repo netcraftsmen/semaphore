@@ -1,2 +1,7 @@
 meraki
 flake8
+#
+confluent-kafka>=1.4.2
+requests
+certifi
+avro

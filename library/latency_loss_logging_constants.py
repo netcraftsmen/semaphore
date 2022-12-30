@@ -16,3 +16,20 @@ LOGGING = dict(
     port='514',
     debug=True
     )
+    
+import os
+# Define Kafka configuration
+PRODUCER_CONF = {
+            'bootstrap.servers': os.environ.get('BOOTSTRAP_SERVER'),
+            'security.protocol': 'SASL_SSL',
+            'sasl.mechanisms': 'PLAIN',
+            'sasl.username': os.environ.get('CLUSTER_API_KEY'),
+            'sasl.password': os.environ.get('CLUSTER_API_SECRET')
+}
+
+# Define Confluent Cloud Schema Registry
+SCHEMA_CONF = {
+          'schema.registry.url': os.environ.get('SR_URL'),
+          'basic.auth.credentials.source': 'USER_INFO',
+          'basic.auth.user.info': '{}:{}'.format(os.environ.get('SR_API_KEY'), os.environ.get('SR_API_SECRET'))
+}
