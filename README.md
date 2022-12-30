@@ -1,17 +1,24 @@
 # semaphore
 
-Semaphore: a system of sending messages by holding the arms or two flags or poles in certain positions according to an alphabetic code.
+**Semaphore**: a system of sending messages by holding the arms or two flags or poles in certain positions according to an alphabetic code.
+
+## Abstract
+
+A Message Bus is commonly used in micro-service architectures to allow applications to communicate over a common, shared set of services. RabbitMQ and Kafka are two popular messaging systems serving different use cases. Kafka is designed for massive data and high throughput, while RabbitMQ is for simple use cases with low traffic volumes.
+
+ Network operators have relied upon [SNMP](https://www.ietf.org/rfc/rfc9232.html#RFC3416)] and [Syslog](https://www.ietf.org/rfc/rfc9232.html#RFC5424) to monitor the network. Network telemetry has emerged, replacing polling data from network devices, to streaming data pushed to a collector. Telegraf is a popular collector, which receives the telemetry data, coupled with InfluxDB which stores it, and Grafana which is responsible for visualizations and alerting.
+
+ Confluent Cloud, A fully managed, cloud-native service for Apache Kafka.
+
+ This session illustrates how to publish messages to Kafka using the Meraki dashboard API `getDeviceLossAndLatencyHistory` Loss and Latency of network interface.
+
+ 
 
 
-## Installation
+## References
 
-```
-python3 -m venv meraki
-source meraki/bin/activate
-```
+https://stackoverflow.com/questions/42151544/when-to-use-rabbitmq-over-kafka
 
-```
-sudo apt-get install python3-dev
-sudo apt-get install libpq-dev python-dev libxml2-dev libxslt1-dev libldap2-dev libsasl2-dev libffi-dev
-python3 -m pip install meraki
-```
+https://www.ietf.org/rfc/rfc9232.html
+
+https://blogs.cisco.com/developer/getting-started-with-model-driven-telemetry
