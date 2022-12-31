@@ -7,8 +7,11 @@
 MERAKI = dict(
     target='8.8.8.8',
     firewalls=('MX64',),
-    timespan=119,
-    uplink='wan1'
+    timespan=119,            # value must be in seconds and be less than or equal to 31 days. 
+    resolution=60,           # valid resolutions are: 60, 600, 3600, 86400. The default is 60.
+    uplink='wan1',
+    print_console=False,
+    log_file_prefix=__file__[:-13]
     )
 
 LOGGING = dict(
@@ -24,7 +27,9 @@ PRODUCER_CONF = {
             'security.protocol': 'SASL_SSL',
             'sasl.mechanisms': 'PLAIN',
             'sasl.username': os.environ.get('CLUSTER_API_KEY'),
-            'sasl.password': os.environ.get('CLUSTER_API_SECRET')
+            'sasl.password': os.environ.get('CLUSTER_API_SECRET'),
+            'topic': os.environ.get('TOPIC', 'topic_0'),
+            'key': os.environ.get('RECORD_KEY', None)        # if Null, round-robin over all partitions
 }
 CONSUMER_CONF = PRODUCER_CONF
 

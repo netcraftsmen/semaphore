@@ -12,15 +12,14 @@
 #         max-line-length = 160
 #         ignore = E402
 #
-#
 #      references:
 #          https://documentation.meraki.com/MX/Monitoring_and_Reporting/Appliance_Status/MX_Uplink_Settings
-
 
 import os
 import subprocess
 import json
 import sys
+import argparse
 from uuid import uuid4
 from confluent_kafka import avro, KafkaError, Producer
 from confluent_kafka.admin import AdminClient, NewTopic
@@ -33,18 +32,17 @@ try:
     from latency_loss_logging_constants import MERAKI, LOGGING, SCHEMA_CONF, PRODUCER_CONF
 except ImportError:
     print('Could not import constants!')
-    exit()
+    exit(1)
 
                     
 def call_back(err, msg):
     """ 
-        Call back handler
-        p.poll() serves delivery reports (on_delivery) from previous produce() calls
+        Kafka call back handler
     """
     if err is None:
-        print("Produced record to topic {} partition [{}] @ offset {}".format(msg.topic(), msg.partition(), msg.offset()))    
+        print(f"Produced record to topic {msg.topic()} partition [{msg.partition()}] @ offset {msg.offset()}")    
     else:
-        print("Failed to deliver message: {}".format(err))
+        print(f"Failed to deliver message: {err}")
 
 def get_devices(dashboard, firewalls=MERAKI['firewalls']):
     """ 
@@ -73,7 +71,6 @@ def get_devices(dashboard, firewalls=MERAKI['firewalls']):
 def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], uplink=MERAKI['uplink']):
     """
         Get the Loss and Latency History from the firewall device uplink. 
-
     """
     response = []
 
@@ -94,7 +91,7 @@ def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], u
 
     return response
 
-def logging(records):
+def syslog(records):
     """ 
         Generate (and filter) what is logged and optionally print out.
 
@@ -120,7 +117,7 @@ def logging(records):
             print(f'CMD:{cmd} \n MSG:{msg}')
             print(f'OUTPUT:{returned_output.decode("utf-8")} \n ------')
 
-def producer(records, topic='topic_0'):
+def kafka(records, topic=PRODUCER_CONF['topic'], key=PRODUCER_CONF['key']):
     """
        Topic is defined from GUI
        https://confluent.cloud/environments/env-9vzp0/clusters/lkc-gd35m/topics
@@ -137,34 +134,44 @@ def producer(records, topic='topic_0'):
        Each topic can have multiple partitions, in this example, we have the default value of 6 partitions
        Each partition is a single log file where records are written to it append-only.
     """
-
-    # Create Producer instance
-    # A producer is an external application (this program) that writes messages to a Kafka cluster
+    # Create Producer instance, producers write messages to a Kafka cluster
     producer = Producer(PRODUCER_CONF)
 
-    for record in records:
+    args = dict(on_delivery=call_back)    # Refer to Kafka call back handler function (call_back) defined above
+
+    if key != None:
         # For two records with the same key, the producer will always choose the same partition
-        record_key = '2'
-        record_value = json.dumps(record)
-        producer.produce(topic, key=record_key, value=record_value, on_delivery=call_back)
+        args['key'] = str(key)
 
-        producer.poll(0)  # invoke the on_delivery=call_back function
+    # If key is not specified, e.g. Null, the messages are written round-robin across all partitions
 
-    producer.flush()  # flush() will block until the previously sent messages are delivered
+    for record in records:
+        producer.produce(topic, value=json.dumps(record), **args)
+        producer.poll(0)        # invoke the on_delivery=call_back function
+
+    producer.flush()            # flush() will block until the previously sent messages are delivered
     return
 
 
 def main():
-
-    
+    """
+        Check for the Meraki API key, determine if we are logging to Syslog or publishing to Kafka
+    """
     if os.getenv('MERAKI_DASHBOARD_API_KEY', None):
-        dashboard = meraki.DashboardAPI(output_log=False)     
+        dashboard = meraki.DashboardAPI(output_log=False, print_console=MERAKI['print_console'])
     else:
         # by default, the API looks for the API key in environment variable MERAKI_DASHBOARD_API_KEY
         print('please create and specify the API key, e.g. "export MERAKI_DASHBOARD_API_KEY=12345"')
 
-    logging(get_stats(dashboard))     # Write to syslog
-    producer(get_stats(dashboard))    # Write to Kafka
+    parser = argparse.ArgumentParser(prog='latency_loss_logging.py', description='Demonstration of telemetry logging and publishing')
+    parser.add_argument('-a', '--action', dest='action', choices=['syslog', 'kafka', 'both'], help='action', default='both', required=False)
+    args = parser.parse_args()
+
+    if args.action in ('syslog', 'both'):
+        syslog(get_stats(dashboard))       # Write to syslog
+
+    if args.action in ('kafka', 'both'):
+        kafka(get_stats(dashboard))        # Publish to Kafka
 
 
 if __name__ == '__main__':
