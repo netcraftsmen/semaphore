@@ -35,12 +35,6 @@ except ImportError:
     print('Could not import constants!')
     exit()
 
-
-# TEST DATA, CPU is the KEY, the VALUE is list of dictionaries
-messages = {'cpu': [{'core0': 10},
-                    {'core0': 12},
-                    {'core0': 11},
-                    {'core0': 20}]}
                     
 def call_back(err, msg):
     """ 
@@ -126,7 +120,7 @@ def logging(records):
             print(f'CMD:{cmd} \n MSG:{msg}')
             print(f'OUTPUT:{returned_output.decode("utf-8")} \n ------')
 
-def producer(topic='basic'):
+def producer(records, topic='topic_0'):
     """
        Topic is defined from GUI
        https://confluent.cloud/environments/env-9vzp0/clusters/lkc-gd35m/topics
@@ -134,6 +128,11 @@ def producer(topic='basic'):
 
        A topic is an ordered log of events. When an external system 
        writes an event to Kafka, it is appended to the end of a topic.
+
+       A Topic is a category/feed name to which records are stored and published. 
+       All Kafka records are organized into topics. Producer applications write data to topics 
+       and consumer applications read from topics. Records published to the cluster 
+       stay in the cluster until a configurable retention period has passed by.
        
        Each topic can have multiple partitions, in this example, we have the default value of 6 partitions
        Each partition is a single log file where records are written to it append-only.
@@ -141,17 +140,15 @@ def producer(topic='basic'):
 
     # Create Producer instance
     # A producer is an external application (this program) that writes messages to a Kafka cluster
-    producer = Producer(producer_conf)
+    producer = Producer(PRODUCER_CONF)
 
-    for key, values in messages.items():
+    for record in records:
         # For two records with the same key, the producer will always choose the same partition
-        record_key = key
-        # In our test data, each key contains a list of dictionaries
-        for value in values:
-            record_value = json.dumps(value)
-            producer.produce(topic, key=record_key, value=record_value, on_delivery=call_back)
+        record_key = '2'
+        record_value = json.dumps(record)
+        producer.produce(topic, key=record_key, value=record_value, on_delivery=call_back)
 
-            producer.poll(0)  # invoke the on_delivery=call_back function
+        producer.poll(0)  # invoke the on_delivery=call_back function
 
     producer.flush()  # flush() will block until the previously sent messages are delivered
     return
@@ -166,7 +163,8 @@ def main():
         # by default, the API looks for the API key in environment variable MERAKI_DASHBOARD_API_KEY
         print('please create and specify the API key, e.g. "export MERAKI_DASHBOARD_API_KEY=12345"')
 
-    logging(get_stats(dashboard))
+    logging(get_stats(dashboard))     # Write to syslog
+    producer(get_stats(dashboard))    # Write to Kafka
 
 
 if __name__ == '__main__':

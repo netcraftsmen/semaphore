@@ -10,6 +10,9 @@ A Message Bus is commonly used in micro-service architectures to allow applicati
 
  Confluent Cloud, A fully managed, cloud-native service for Apache Kafka.
 
+Illustrates using a free trial version of Confluent Cloud -Walk through the basic building blocks of Kafka and Confluent Cloud.
+
+
  This session illustrates how to publish messages to Kafka using the Meraki dashboard API `getDeviceLossAndLatencyHistory` Loss and Latency of network interface.
 
  

@@ -26,6 +26,7 @@ PRODUCER_CONF = {
             'sasl.username': os.environ.get('CLUSTER_API_KEY'),
             'sasl.password': os.environ.get('CLUSTER_API_SECRET')
 }
+CONSUMER_CONF = PRODUCER_CONF
 
 # Define Confluent Cloud Schema Registry
 SCHEMA_CONF = {
