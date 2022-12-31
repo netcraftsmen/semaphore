@@ -15,8 +15,9 @@ Illustrates using a free trial version of Confluent Cloud -Walk through the basi
 
  This session illustrates how to publish messages to Kafka using the Meraki dashboard API `getDeviceLossAndLatencyHistory` Loss and Latency of network interface.
 
+ Kafka to stream logs once and be consumed by multiple receivers.
  
-
+Uses https://kafka.apache.org/uses
 
 ## References
 
@@ -25,3 +26,9 @@ https://stackoverflow.com/questions/42151544/when-to-use-rabbitmq-over-kafka
 https://www.ietf.org/rfc/rfc9232.html
 
 https://blogs.cisco.com/developer/getting-started-with-model-driven-telemetry
+
+https://github.com/ericchou1/network-devops-kafka-up-and-running
+
+https://www.goodreads.com/book/show/59661159-kafka-up-and-running-for-network-devops
+
+https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying
