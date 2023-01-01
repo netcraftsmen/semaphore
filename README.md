@@ -2,6 +2,9 @@
 
 **Semaphore**: a system of sending messages by holding the arms or two flags or poles in certain positions according to an alphabetic code.
 
+## Title
+Introduction to network telemetry using Apache Kafka in Confluent Cloud.
+
 ## Abstract
 
 The use of telemetry is an increased focus in IT operations providing raw data to the Machine Learning / Artificial Intelligence (ML/AI) algorithms for AIOps (Artificial Intelligence for IT Operations).
@@ -25,7 +28,7 @@ Telegraf is a popular collector, which receives the telemetry data, coupled with
 
 https://prometheus.io/docs/introduction/overview/
 
- 
+ Policies Publisher is an advanced Cisco Secure Workload feature allowing third party vendors to implement their own enforcement algorithms optimized for network appliances such as load balancers or firewalls.
 
 Illustrates using a free trial version of Confluent Cloud -Walk through the basic building blocks of Kafka and Confluent Cloud.
 
