@@ -4,13 +4,15 @@
 
 ## Abstract
 
-The use of telemetry is an increased focus in IT operations to feed the Machine Learning / Artificial Intelligence (ML/AL) algorithms being developed and deployed.
+The use of telemetry is an increased focus in IT operations providing raw data to the Machine Learning / Artificial Intelligence (ML/AI) algorithms for AIOps (Artificial Intelligence for IT Operations).
 
-Network operators have relied upon [SNMP](https://www.ietf.org/rfc/rfc9232.html#RFC3416)] and [Syslog](https://www.ietf.org/rfc/rfc9232.html#RFC5424) to monitor the network. Network telemetry (streaming data pushed to a collector) is replacing polling data from network devices.
- 
-While there are tools (TIG) to receive telemetry data, store it and visualize and alert, how should the network operator provide access to infrastructure telementry data, in real time, at scale across all technology stateholders?
+Network operators have relied upon [SNMP](https://www.ietf.org/rfc/rfc9232.html#RFC3416)] and [Syslog](https://www.ietf.org/rfc/rfc9232.html#RFC5424) to monitor the network. Network telemetry (streaming data pushed to a collector) is replacing the polling of network devices. The push approach is less burden to the CPU of the device, can be delivered promptly, and is initiated by the device when a state change is detected.
 
-This session illustrates using Apache Kafka, a distributed event store and stream-processing platform designed for massive data and high throughput.
+There are open source tools to receive telemetry data, store it, visualize and alert; how should the network operator provide access to infrastructure telemetry data, in real-time, at scale across all technology stakeholders?
+
+This session illustrates publishing telemetry data using the Meraki SDK to Apache Kafka deployed in Confluent Cloud. Kafka is a distributed event store and stream-processing platform designed for big data and high throughput. With the use of the developer instance of Confluent Cloud and the Python SDK, we examine the ease at which a network operation can publish and consume telemetry data to implement their own AIOps approach.
+
+## Notes
 
 We begin by providing an overview of the Kafa architectual components and then demonstrate publish messages to Confluent Cloud, (SaaS for Apache Kafka) from the Meraki dashboard API [Loss and Latency](https://developer.cisco.com/meraki/api-v1/#!get-device-loss-and-latency-history) of network interface. The code to publish and consume the is demonstrated and available to the attendees via a public GitLab repository.
 
