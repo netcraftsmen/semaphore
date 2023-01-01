@@ -67,3 +67,7 @@ https://www.aiopsforeveryone.com/observability-vs-telemetry-vs-monitoring-is-all
 https://www.spiceworks.com/tech/data-management/articles/what-is-kafka/
 
 Kafka, however, has a reasonably low overhead compared to other messaging systems since it does not monitor user activity or remove messages that have been read. On the other hand, it keeps all messages for a predetermined period and leaves it up to the user to track which messages have been read. 
+
+https://www.linkedin.com/pulse/kafka-consumer-auto-offset-reset-rob-golder/
+
+auto offset reset consumer configuration defines how a consumer should behave when consuming from a topic partition when there is no initial offset.
