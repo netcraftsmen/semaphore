@@ -10,7 +10,7 @@ Network operators have relied upon [SNMP](https://www.ietf.org/rfc/rfc9232.html#
 
 There are open source tools to receive telemetry data, store it, visualize and alert; how should the network operator provide access to infrastructure telemetry data, in real-time, at scale across all technology stakeholders?
 
-This session illustrates publishing telemetry data using the Meraki SDK to Apache Kafka deployed in Confluent Cloud. Kafka is a distributed event store and stream-processing platform designed for big data and high throughput. With the use of the developer instance of Confluent Cloud and the Python SDK, we examine the ease at which a network operation can publish and consume telemetry data to implement their own AIOps approach.
+This session illustrates publishing telemetry data from the Meraki SDK to Apache Kafka deployed in Confluent Cloud. Kafka is a distributed event store and stream-processing platform designed for big data and high throughput. Using the developer instance of Confluent Cloud and the Python SDK, we examine the ease at which a network operator can publish and consume telemetry data to implement its own AIOps approach.
 
 ## Notes
 
