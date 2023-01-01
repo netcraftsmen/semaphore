@@ -29,7 +29,7 @@ import certifi
 import meraki
 
 try:
-    from latency_loss_logging_constants import MERAKI, LOGGING, SCHEMA_CONF, PRODUCER_CONF
+    from latency_loss_logging_constants import MERAKI, LOGGING, SCHEMA_CONF, PRODUCER_CONF, PRODUCER_ARGS
 except ImportError:
     print('Could not import constants!')
     exit(1)
@@ -117,7 +117,7 @@ def syslog(records):
             print(f'CMD:{cmd} \n MSG:{msg}')
             print(f'OUTPUT:{returned_output.decode("utf-8")} \n ------')
 
-def kafka(records, topic=PRODUCER_CONF['topic'], key=PRODUCER_CONF['key']):
+def kafka(records, topic=PRODUCER_ARGS['topic'], key=PRODUCER_ARGS['key']):
     """
        Topic is defined from GUI
        https://confluent.cloud/environments/env-9vzp0/clusters/lkc-gd35m/topics

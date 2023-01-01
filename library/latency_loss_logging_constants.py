@@ -27,11 +27,14 @@ PRODUCER_CONF = {
             'security.protocol': 'SASL_SSL',
             'sasl.mechanisms': 'PLAIN',
             'sasl.username': os.environ.get('CLUSTER_API_KEY'),
-            'sasl.password': os.environ.get('CLUSTER_API_SECRET'),
-            'topic': os.environ.get('TOPIC', 'topic_0'),
-            'key': os.environ.get('RECORD_KEY', None)        # if Null, round-robin over all partitions
+            'sasl.password': os.environ.get('CLUSTER_API_SECRET')
 }
 CONSUMER_CONF = PRODUCER_CONF
+
+PRODUCER_ARGS = {
+            'topic': os.environ.get('TOPIC', 'topic_0'),
+            'key': os.environ.get('RECORD_KEY', None)        # if Null, round-robin over all partitions}
+}
 
 # Define Confluent Cloud Schema Registry
 SCHEMA_CONF = {
