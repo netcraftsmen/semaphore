@@ -23,7 +23,7 @@ import argparse
 
 parser = argparse.ArgumentParser(prog='consumer.py', description='Kafka consumer')
 parser.add_argument('-g', '--group', dest='group', help='group ID', default='group_1', required=False)
-parser.add_argument('-o', '--offset', dest='offset', help='auto.offset.reset', default='earliest', required=False)
+parser.add_argument('-o', '--offset', dest='offset', choices=['latest', 'earliest'], help='auto.offset.reset', default='earliest', required=False)
 parser.add_argument('-t', '--timeout', dest='timeout', help='poll timeout (sec)', default=5.0, required=False)
 parser.add_argument('-r', '--range', dest='range', help='number of polling iterations', default=65536, required=False)
 args = parser.parse_args()
@@ -40,11 +40,11 @@ def main():
         Consume messages from Kafka
     """
 
-    for n in range(0, args.range):
+    for n in range(1, args.range):
 
         msg = consumer.poll(args.timeout)
         if msg is None:
-            print(f'Waiting for message or event/error in poll() {n} of {args.range}')
+            print(f'Waiting for message or event/error in poll() {n} of {args.range} iterations')
             continue
         elif msg.error():
             print(f'error: {msg.error()}')
@@ -52,7 +52,7 @@ def main():
             # Received a message
             print(f'offset:{msg.offset()} partition:{msg.partition()} key:{msg.key()} value:{msg.value()}')
 
-    # consumer.close()
+    # consumer.close()    TODO causing exceptions
 
 
 if __name__ == '__main__':
