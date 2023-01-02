@@ -5,7 +5,7 @@
 #
 #     author: Joel W. King  @joelwking
 #
-#     usage: python3 ./latency_loss_logging.py 
+#     usage: python3 ./latency_loss_logging.py
 #
 #     linter: flake8
 #         [flake8]
@@ -18,11 +18,10 @@
 import os
 import subprocess
 import json
-import sys
 import argparse
-from uuid import uuid4
+# from uuid import uuid4
 from confluent_kafka import avro, KafkaError, Producer
-from confluent_kafka.admin import AdminClient, NewTopic
+# from confluent_kafka.admin import AdminClient, NewTopic
 
 import certifi
 
@@ -34,18 +33,19 @@ except ImportError:
     print('Could not import constants!')
     exit(1)
 
-                    
+
 def call_back(err, msg):
-    """ 
+    """
         Kafka call back handler
     """
     if err is None:
-        print(f"Produced record to topic {msg.topic()} partition [{msg.partition()}] @ offset {msg.offset()}")    
+        print(f"Produced record to topic {msg.topic()} partition [{msg.partition()}] @ offset {msg.offset()}")
     else:
         print(f"Failed to deliver message: {err}")
 
+
 def get_devices(dashboard, firewalls=MERAKI['firewalls']):
-    """ 
+    """
         Get all the organizations, the networks in each org, and the devices in each network
 
         Identify firewall device types of interest, we return a list of firewall devices
@@ -68,9 +68,10 @@ def get_devices(dashboard, firewalls=MERAKI['firewalls']):
                     response.append(device)
     return response
 
+
 def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], uplink=MERAKI['uplink']):
     """
-        Get the Loss and Latency History from the firewall device uplink. 
+        Get the Loss and Latency History from the firewall device uplink.
     """
     response = []
 
@@ -80,24 +81,25 @@ def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], u
         mgmt = dashboard.devices.getDeviceManagementInterface(device['serial'])
         #
         # The device stats returns a list of stats, determined by the length of timespan
-        stats = dashboard.devices.getDeviceLossAndLatencyHistory(device['serial'], target, 
+        stats = dashboard.devices.getDeviceLossAndLatencyHistory(device['serial'], target,
                                                                     timespan=timespan, uplink=uplink)
         #
         # Put the public hostname(s) in each record
         for stat in stats:
-            stat.update( mgmt['ddnsHostnames'] )
-        
+            stat.update(mgmt['ddnsHostnames'])
+
         response.extend(stats)
 
     return response
 
+
 def syslog(records):
-    """ 
+    """
         Generate (and filter) what is logged and optionally print out.
 
-        {'startTs': '2021-01-29T21:49:00Z', 'endTs': '2021-01-29T21:50:00Z', 'lossPercent': None, 
-        'latencyMs': None, 'activeDdnsHostname': 'swisswood-cnrtbtvnkm.dynamic-m.com', 
-        'ddnsHostnameWan1': 'swisswood-cnrtbtvnkm-1.dynamic-m.com', 'ddnsHostnameWan2': 
+        {'startTs': '2021-01-29T21:49:00Z', 'endTs': '2021-01-29T21:50:00Z', 'lossPercent': None,
+        'latencyMs': None, 'activeDdnsHostname': 'swisswood-cnrtbtvnkm.dynamic-m.com',
+        'ddnsHostnameWan1': 'swisswood-cnrtbtvnkm-1.dynamic-m.com', 'ddnsHostnameWan2':
         'swisswood-cnrtbtvnkm-2.dynamic-m.com'}
     """
 
@@ -117,20 +119,21 @@ def syslog(records):
             print(f'CMD:{cmd} \n MSG:{msg}')
             print(f'OUTPUT:{returned_output.decode("utf-8")} \n ------')
 
+
 def kafka(records, topic=PRODUCER_ARGS['topic'], key=PRODUCER_ARGS['key']):
     """
        Topic is defined from GUI
        https://confluent.cloud/environments/env-9vzp0/clusters/lkc-gd35m/topics
        Kafka organizes message feeds into categories called topics.
 
-       A topic is an ordered log of events. When an external system 
+       A topic is an ordered log of events. When an external system
        writes an event to Kafka, it is appended to the end of a topic.
 
-       A Topic is a category/feed name to which records are stored and published. 
-       All Kafka records are organized into topics. Producer applications write data to topics 
-       and consumer applications read from topics. Records published to the cluster 
+       A Topic is a category/feed name to which records are stored and published.
+       All Kafka records are organized into topics. Producer applications write data to topics
+       and consumer applications read from topics. Records published to the cluster
        stay in the cluster until a configurable retention period has passed by.
-       
+
        Each topic can have multiple partitions, in this example, we have the default value of 6 partitions
        Each partition is a single log file where records are written to it append-only.
     """
@@ -139,11 +142,10 @@ def kafka(records, topic=PRODUCER_ARGS['topic'], key=PRODUCER_ARGS['key']):
 
     args = dict(on_delivery=call_back)    # Refer to Kafka call back handler function (call_back) defined above
 
-    if key != None:
+    if key is not None:
         # For two records with the same key, the producer will always choose the same partition
+        # If key is not specified, e.g. Null, the messages are written round-robin across all partitions
         args['key'] = str(key)
-
-    # If key is not specified, e.g. Null, the messages are written round-robin across all partitions
 
     for record in records:
         producer.produce(topic, value=json.dumps(record), **args)

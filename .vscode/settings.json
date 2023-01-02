@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/opt/semaphore/bin/python",
+    "python.defaultInterpreterPath": "/opt/semaphore/bin/python",
     "python.linting.flake8Enabled": true,
     "python.linting.enabled": true
 }

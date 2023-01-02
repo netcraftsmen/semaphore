@@ -5,7 +5,7 @@
 #
 #     author: Joel W. King  @joelwking
 #
-#     usage: python3 ./consumer.py 
+#     usage: python3 ./consumer.py
 #
 #     linter: flake8
 #         [flake8]
@@ -16,7 +16,7 @@
 #       - https://medium.com/fintechexplained/12-best-practices-for-using-kafka-in-your-architecture-a9d215e222e3
 #
 from latency_loss_logging_constants import CONSUMER_CONF, PRODUCER_ARGS
-from confluent_kafka import avro, KafkaError
+# from confluent_kafka import avro, KafkaError
 from confluent_kafka import Consumer
 
 import argparse
@@ -34,6 +34,7 @@ CONSUMER_CONF['auto.offset.reset'] = args.offset  # Consume from the beginning o
 consumer = Consumer(CONSUMER_CONF)
 consumer.subscribe([PRODUCER_ARGS['topic']])      # for demo, consume the topic we produced
 
+
 def main():
     """
         Consume messages from Kafka
@@ -50,8 +51,9 @@ def main():
         else:
             # Received a message
             print(f'offset:{msg.offset()} partition:{msg.partition()} key:{msg.key()} value:{msg.value()}')
-            
+
     # consumer.close()
+
 
 if __name__ == '__main__':
     main()
