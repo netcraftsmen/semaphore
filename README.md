@@ -17,10 +17,44 @@ This session illustrates publishing telemetry data from the Meraki SDK to Apache
 
 ## Notes
 
-We begin by providing an overview of the Kafa architectual components and then demonstrate publish messages to Confluent Cloud, (SaaS for Apache Kafka) from the Meraki dashboard API [Loss and Latency](https://developer.cisco.com/meraki/api-v1/#!get-device-loss-and-latency-history) of network interface. The code to publish and consume the is demonstrated and available to the attendees via a public GitLab repository.
+These notes provide an overview of the terms and concepts of Kafka
 
+### Overview
 
+#### Cluster
+
+The Kafka cluster is a combination of one or more servers each of which is called a broker. The Kafka cluster retains all published messages for a configurable period of time, called the log retention. Messages are not discarded after being read by a consumer, rather upon the expiration of the log retention.
+
+#### Topics
+
+The Topic is defined in the Confluent Cloud GUI after creating a Cluster. Kafka organizes message feeds into categories called topics. A topic is an ordered log of events. When an external system
+writes a record (message) to Kafka, it is appended to the end of a topic.
+
+>Note: The terms records and messages are often used interchangeably. A message is a simple array of bytes. The value of the message might be JSON or Protobuf as an example. The default maximum message size is 1MB, but is configurable.
+
+All Kafka messages are stored and published into topics. Producer applications write messages to topics
+and consumer applications read from topics. Records published to the cluster stay in the cluster until a configurable (log retention) period has passed by.
+
+#### Message Keys
+
+Kafka messages consist of a key / value pairs. While the value is the data of the message, the message key determines the partition of the topic. If the message key is null, the records (messages) are stored round-robin across all partitions. Messages that have the same key will be written to the same partititon.
+
+Kafka uses the key of the message to select the partition of the topic. Kafka has guarantees on ordering of the messages only at partition level. 
+
+#### Partitions
+
+Each topic can have multiple partitions, the default number of partitions for Confluent Cloud is six. This value can be changed when creating the topic in the GIU. Each partition is a single log file where records (messages) are written to it append-only.
+
+### Offset
+
+The offset is an integer value that identifies the order of messages within a partition. The consumer can begin reading at a specific offset value within a partition.
+
+#### 
+
+## Other Notes
  OpenTelemetry provides a vendor-agnostic method of collecting telemetry data. 
+
+We begin by providing an overview of the Kafa architectual components and then demonstrate publish messages to Confluent Cloud, (SaaS for Apache Kafka) from the Meraki dashboard API [Loss and Latency](https://developer.cisco.com/meraki/api-v1/#!get-device-loss-and-latency-history) of network interface. The code to publish and consume the is demonstrated and available to the attendees via a public GitLab repository.
 
 A Message Bus is commonly used in micro-service architectures to allow applications to communicate over a common, shared set of services. RabbitMQ and Kafka are two popular messaging systems serving different use cases. Kafka is designed for massive data and high throughput, while RabbitMQ is for simple use cases with low traffic volumes.
 
@@ -36,7 +70,6 @@ Illustrates using a free trial version of Confluent Cloud -Walk through the basi
 
  Kafka to stream logs once and be consumed by multiple receivers.
 
-The number of partitions by default is 6 when creating a Topic in confluent.cloud
  
 Uses https://kafka.apache.org/uses
 
@@ -56,7 +89,7 @@ https://engineering.linkedin.com/distributed-systems/log-what-every-software-eng
 
 https://stackoverflow.com/questions/29511521/is-key-required-as-part-of-sending-messages-to-kafka
 
- Kafka has guarantees on ordering of the messages only at partition level. Kafka uses the key of the message to select the partition of the topic.  Kafka will partition the data in a round-robin fashion. Using the same key will put all these messages in the same partititon.
+
 
 https://www.geeksforgeeks.org/apache-kafka-message-keys/
 

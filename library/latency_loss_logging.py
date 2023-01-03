@@ -76,14 +76,14 @@ def get_stats(dashboard, target=MERAKI['target'], timespan=MERAKI['timespan'], u
     response = []
 
     for device in get_devices(dashboard):
-        #
+
         # Get the management interface and dynamic DNS host names for the public addressing
         mgmt = dashboard.devices.getDeviceManagementInterface(device['serial'])
-        #
+
         # The device stats returns a list of stats, determined by the length of timespan
         stats = dashboard.devices.getDeviceLossAndLatencyHistory(device['serial'], target,
-                                                                    timespan=timespan, uplink=uplink)
-        #
+                                                                 timespan=timespan, uplink=uplink)
+
         # Put the public hostname(s) in each record
         for stat in stats:
             stat.update(mgmt['ddnsHostnames'])
@@ -97,6 +97,7 @@ def syslog(records):
     """
         Generate (and filter) what is logged and optionally print out.
 
+        Sample input record
         {'startTs': '2021-01-29T21:49:00Z', 'endTs': '2021-01-29T21:50:00Z', 'lossPercent': None,
         'latencyMs': None, 'activeDdnsHostname': 'swisswood-cnrtbtvnkm.dynamic-m.com',
         'ddnsHostnameWan1': 'swisswood-cnrtbtvnkm-1.dynamic-m.com', 'ddnsHostnameWan2':
@@ -105,13 +106,14 @@ def syslog(records):
 
     for record in records:
 
-        if True:                                           # TODO ADD TEST to see this record is of interest
+        if True:                                   # TODO ADD TEST to see this record is of interest
             msg = ''
-            for key, value in record.items():              # Convert to  a string in the form of: key=value
+            for key, value in record.items():      # Convert to a string in the form of: key=value
                 msg += f'{str(key)}={str(value)} '
 
-        cmd = ['/usr/bin/logger', '--server', f'{LOGGING["server"]}', '--port',
-                f'{LOGGING["port"]}', '--udp', f'"{msg}"']
+        cmd = ['/usr/bin/logger', '--server', f'{LOGGING["server"]}', 
+                                  '--port', f'{LOGGING["port"]}', 
+                                  '--udp', f'"{msg}"']
 
         returned_output = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
 
@@ -122,29 +124,16 @@ def syslog(records):
 
 def kafka(records, topic=PRODUCER_ARGS['topic'], key=PRODUCER_ARGS['key']):
     """
-       Topic is defined from GUI
-       https://confluent.cloud/environments/env-9vzp0/clusters/lkc-gd35m/topics
-       Kafka organizes message feeds into categories called topics.
-
-       A topic is an ordered log of events. When an external system
-       writes an event to Kafka, it is appended to the end of a topic.
-
-       A Topic is a category/feed name to which records are stored and published.
-       All Kafka records are organized into topics. Producer applications write data to topics
-       and consumer applications read from topics. Records published to the cluster
-       stay in the cluster until a configurable retention period has passed by.
-
-       Each topic can have multiple partitions, in this example, we have the default value of 6 partitions
-       Each partition is a single log file where records are written to it append-only.
+        Publish messages to a topic, an ordered log of events. Each topic can have multiple partitions.
+        For two records with the same key, the producer will always choose the same partition. If the
+        key is not specified, message are written round-robin across all partititons.
     """
-    # Create Producer instance, producers write messages to a Kafka cluster
-    producer = Producer(PRODUCER_CONF)
+
+    producer = Producer(PRODUCER_CONF)    #  Producers write messages to a Kafka cluster
 
     args = dict(on_delivery=call_back)    # Refer to Kafka call back handler function (call_back) defined above
 
     if key is not None:
-        # For two records with the same key, the producer will always choose the same partition
-        # If key is not specified, e.g. Null, the messages are written round-robin across all partitions
         args['key'] = str(key)
 
     for record in records:
