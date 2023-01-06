@@ -20,6 +20,7 @@ from latency_loss_logging_constants import CONSUMER_CONF, PRODUCER_ARGS
 from confluent_kafka import Consumer
 
 import argparse
+import json
 
 parser = argparse.ArgumentParser(prog='consumer.py', description='Kafka consumer')
 parser.add_argument('-g', '--group', dest='group', help='group ID', default='group_1', required=False)
@@ -50,7 +51,9 @@ def main():
             print(f'error: {msg.error()}')
         else:
             # Received a message
-            print(f'offset:{msg.offset()} partition:{msg.partition()} key:{msg.key()} value:{msg.value()}')
+            
+            print(f'offset:{msg.offset()} partition:{msg.partition()} key:{msg.key()} ')
+            print(json.dumps(json.loads(msg.value()), sort_keys=False, indent=4))
 
     # consumer.close()    TODO causing exceptions
 

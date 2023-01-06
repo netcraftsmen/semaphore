@@ -19,7 +19,7 @@ MERAKI = dict(
 
 # SYSLOG configuration
 LOGGING = dict(
-    server=os.environ.get('LOGGING_SERVER'),  # Specify the IP address of the logging server
+    server=os.environ.get('LOGGING_SERVER', '192.0.2.1'),  # Specify the IP address of the logging server
     port='514',
     debug=True
 )
