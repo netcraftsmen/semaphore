@@ -1,3 +1,5 @@
 #
 library/__pycache__/*
 .devcontainer/devcontainer.env
+.secrets/*
+!.secrets/README.md
