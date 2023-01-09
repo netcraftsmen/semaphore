@@ -39,7 +39,7 @@ def call_back(err, msg):
         Kafka call back handler
     """
     if err is None:
-        print(f"Produced record to topic {msg.topic()} partition [{msg.partition()}] @ offset {msg.offset()}")
+        print(f"Produced record | topic: {msg.topic()}, partition: [{msg.partition()}], @offset: {msg.offset()} | key: {msg.key().decode('utf-8')}, value: {msg.value()[:50].decode('utf-8')}")
     else:
         print(f"Failed to deliver message: {err}")
 
@@ -118,8 +118,8 @@ def syslog(records):
         returned_output = subprocess.run(cmd, stdout=subprocess.PIPE).stdout
 
         if LOGGING.get('debug'):
-            print(f'CMD:{cmd} \n MSG:{msg}')
-            print(f'OUTPUT:{returned_output.decode("utf-8")} \n ------')
+            print(f'CMD:{cmd}')
+            print(f'{returned_output.decode("utf-8")}')
 
 
 def kafka(records, topic=PRODUCER_ARGS['topic'], key=PRODUCER_ARGS['key']):
@@ -129,7 +129,7 @@ def kafka(records, topic=PRODUCER_ARGS['topic'], key=PRODUCER_ARGS['key']):
         key is not specified, message are written round-robin across all partititons.
     """
 
-    producer = Producer(PRODUCER_CONF)    #  Producers write messages to a Kafka cluster
+    producer = Producer(PRODUCER_CONF)    # Producers write messages to a Kafka cluster
 
     args = dict(on_delivery=call_back)    # Refer to Kafka call back handler function (call_back) defined above
 

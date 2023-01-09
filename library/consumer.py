@@ -51,7 +51,7 @@ def main():
                 print(f'error: {msg.error()}')
             else:
                 # Received a message
-                print(f'offset:{msg.offset()} partition:{msg.partition()} key:{msg.key()} value:{msg.value()[:50]}')
+                print(f"Consumed record | topic: {msg.topic()}, partition: [{msg.partition()}], @offset: {msg.offset()} | key: {msg.key().decode('utf-8')}, value: {msg.value()[:50].decode('utf-8')}")
                 if args.verbose:
                     print(json.dumps(json.loads(msg.value()), sort_keys=False, indent=4))
     except KeyboardInterrupt:
