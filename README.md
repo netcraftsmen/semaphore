@@ -1,6 +1,6 @@
 # semaphore
 
-**Semaphore**: a system of sending messages by holding the arms or two flags or poles in certain positions according to an alphabetic code.
+Project name, **Semaphore**: a system of sending messages by holding the arms or two flags or poles in certain positions according to an alphabetic code.
 
 ## Title
 Introduction to network telemetry using Apache Kafka in Confluent Cloud.
@@ -15,11 +15,21 @@ There are open source tools to receive telemetry data, store it, visualize and a
 
 This session illustrates publishing telemetry data from the Meraki SDK to Apache Kafka deployed in Confluent Cloud. Kafka is a distributed event store and stream-processing platform designed for big data and high throughput. Using the developer instance of Confluent Cloud and the Python SDK, we examine the ease at which a network operator can publish and consume telemetry data to implement its own AIOps approach.
 
+## Presentation
+
+The live stream and recorded [presentation](https://www.youtube.com/watch?v=ABMcflO1ix8) (following the event on January 25th 2023) is available at https://www.youtube.com/@infrastructureautomation Programmability and Automation Meetup youtube channel.
+
+## Telemetry Source
+
+To illustrate the concepts of publishing telemetry to Kafka, the telemetry source is the Meraki dashboard API [Loss and Latency](https://developer.cisco.com/meraki/api-v1/#!get-device-loss-and-latency-history) via the Meraki SDK is used in the demonstration code.
+
 ## Notes
 
 These notes provide an overview of the terms and concepts of Kafka
 
 ### Overview
+
+Overview of Kafka terms and concepts.
 
 #### Cluster
 
@@ -39,7 +49,7 @@ and consumer applications read from topics. Records published to the cluster sta
 
 Kafka messages consist of a key / value pairs. While the value is the data of the message, the message key determines the partition of the topic. If the message key is null, the records (messages) are stored round-robin across all partitions. Messages that have the same key will be written to the same partititon.
 
-Kafka uses the key of the message to select the partition of the topic. Kafka has guarantees on ordering of the messages only at partition level. 
+Kafka uses the [key](https://stackoverflow.com/questions/29511521/is-key-required-as-part-of-sending-messages-to-kafka) of the message to select the partition of the topic. Kafka has guarantees on ordering of the messages only at partition level. 
 
 #### Partitions
 
@@ -47,24 +57,11 @@ Each topic can have multiple partitions, the default number of partitions for Co
 
 ### Offset
 
-The offset is an integer value that identifies the order of messages within a partition. The consumer can begin reading at a specific offset value within a partition.
+The offset is an integer value that identifies the order of messages within a partition. The consumer can begin reading at a specific offset value within a partition. 
 
-#### 
 
 ## Other Notes
  OpenTelemetry provides a vendor-agnostic method of collecting telemetry data. 
-
-We begin by providing an overview of the Kafa architectual components and then demonstrate publish messages to Confluent Cloud, (SaaS for Apache Kafka) from the Meraki dashboard API [Loss and Latency](https://developer.cisco.com/meraki/api-v1/#!get-device-loss-and-latency-history) of network interface. The code to publish and consume the is demonstrated and available to the attendees via a public GitLab repository.
-
-A Message Bus is commonly used in micro-service architectures to allow applications to communicate over a common, shared set of services. RabbitMQ and Kafka are two popular messaging systems serving different use cases. Kafka is designed for massive data and high throughput, while RabbitMQ is for simple use cases with low traffic volumes.
-
-Telegraf is a popular collector, which receives the telemetry data, coupled with InfluxDB which stores it, and Grafana which is responsible for visualizations and alerting.
-
-https://prometheus.io/docs/introduction/overview/
-
- Policies Publisher is an advanced Cisco Secure Workload feature allowing third party vendors to implement their own enforcement algorithms optimized for network appliances such as load balancers or firewalls.
-
-Illustrates using a free trial version of Confluent Cloud -Walk through the basic building blocks of Kafka and Confluent Cloud.
 
 
 
@@ -75,9 +72,15 @@ Uses https://kafka.apache.org/uses
 
 ## References
 
-https://stackoverflow.com/questions/42151544/when-to-use-rabbitmq-over-kafka
+The following references were used in developing this use case.
 
-https://www.ietf.org/rfc/rfc9232.html
+ * *A Message Bus is commonly used in micro-service architectures to allow applications to communicate over a common, shared set of services RabbitMQ and Kafka are two popular messaging systems serving different use cases. Kafka is designed for massive data and high throughput, while RabbitMQ is for simple use cases with low traffic volumes.* <https://stackoverflow.com/questions/42151544/when-to-use-rabbitmq-over-kafka>
+
+* *RFC 9232 Network Telemetry Framework* <https://www.ietf.org/rfc/rfc9232.html>
+
+Telegraf is a popular collector, which receives the telemetry data, coupled with InfluxDB which stores it, and Grafana which is responsible for visualizations and alerting.
+
+https://prometheus.io/docs/introduction/overview/
 
 https://blogs.cisco.com/developer/getting-started-with-model-driven-telemetry
 
@@ -87,8 +90,8 @@ https://www.goodreads.com/book/show/59661159-kafka-up-and-running-for-network-de
 
 https://engineering.linkedin.com/distributed-systems/log-what-every-software-engineer-should-know-about-real-time-datas-unifying
 
-https://stackoverflow.com/questions/29511521/is-key-required-as-part-of-sending-messages-to-kafka
 
+ Policies Publisher is an advanced Cisco Secure Workload feature allowing third party vendors to implement their own enforcement algorithms optimized for network appliances such as load balancers or firewalls.
 
 
 https://www.geeksforgeeks.org/apache-kafka-message-keys/
