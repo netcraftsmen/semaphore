@@ -13,6 +13,7 @@ LABEL maintainer="Joel W. King" email="ccie1846@gmail.com"
 RUN apt update && \
     apt -y install git && \
     apt -y install python3-venv && \
+    apt -y install build-essential && \
     pip3 install --upgrade pip 
 RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
