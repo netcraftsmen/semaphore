@@ -20,8 +20,10 @@ RUN python3 -m venv $VIRTUAL_ENV
 ENV PATH="$VIRTUAL_ENV/bin:$PATH"
 #
 #
-RUN mkdir /src
-COPY requirements.txt /src
-WORKDIR /src
+RUN mkdir /semaphore
+COPY requirements.txt /semaphore
+WORKDIR /semaphore
 RUN pip install -r requirements.txt
+COPY library/* /semaphore/library/
 #
+RUN /bin/bash
