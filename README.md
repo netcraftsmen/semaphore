@@ -9,7 +9,7 @@ Introduction to network telemetry using Apache Kafka in Confluent Cloud.
 
 The use of telemetry is an increased focus in IT operations providing raw data to the Machine Learning / Artificial Intelligence (ML/AI) algorithms for AIOps (Artificial Intelligence for IT Operations).
 
-Network operators have relied upon [SNMP](https://www.ietf.org/rfc/rfc9232.html#RFC3416)] and [Syslog](https://www.ietf.org/rfc/rfc9232.html#RFC5424) to monitor the network. Network telemetry (streaming data pushed to a collector) is replacing the polling of network devices. The push approach is less burden to the CPU of the device, can be delivered promptly, and is initiated by the device when a state change is detected.
+Network operators have relied upon [SNMP](https://www.ietf.org/rfc/rfc9232.html#RFC3416) and [Syslog](https://www.ietf.org/rfc/rfc9232.html#RFC5424) to monitor the network. Network telemetry (streaming data pushed to a collector) is replacing the polling of network devices. The push approach is less burden to the CPU of the device, can be delivered promptly, and is initiated by the device when a state change is detected.
 
 There are open source tools to receive telemetry data, store it, visualize and alert; how should the network operator provide access to infrastructure telemetry data, in real-time, at scale across all technology stakeholders?
 
