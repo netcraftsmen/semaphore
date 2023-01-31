@@ -1,0 +1,61 @@
+#
+#    Copyright (c) 2022 NetCraftsmen
+#    All rights reserved.
+#    
+#    author: Joel W. King  @joelwking
+#    
+#    usage:  Meta data file for Librarian
+#
+###
+### Required
+###
+
+#
+#  Org for higher level grouping
+org: None
+
+# Namespaces allow content from diverse sources to be grouped together. Typically the Github (Organizations) or GitLab (Group).
+# Namespace names lowercase word characters (i.e., a-z, 0-9) and ‘_’, must have a minimum length of 2 characters, and cannot start with an ‘_’.
+namespace: None
+
+# Typically the GitHub repository name or GitLab Project name. Same character restrictions as namespace.
+name: Semaphore
+
+# A short summary description, this should also be represented in the 'About' (GitHub) or Project description (GitLab)
+description: Introduction to network telemetry using Apache Kafka in Confluent Cloud.
+
+# The URL of the originating SCM repository
+repository: https://gitlab.com/joelwking/semaphore
+
+# A list of the content authors. Can be just the name or in the format 'Full Name <email> (url).
+authors:
+  - Joel W. King <programmable.networks@gmail.com>
+
+# A list of tags for indexing/searching. A tag name has the same character requirements as 'namespace' and 'name'.
+tags: 
+  - python
+  - meraki
+  - kafka
+  - telemetry
+
+###
+### Optional 
+###
+
+# Project allows grouping multiple repositories which comprise a services project.
+project: None
+
+# Semantic versioning -  major version; minor version; and patch. 
+version: None
+
+# The URL to the avatar.
+avatar: None
+
+# The path to the license file for the collection. This path is relative to the root of the repository.
+license_file: LICENSE
+
+# The URL to any online docs.
+documentation: https://gitlab.com/joelwking/semaphore/-/blob/master/README.md
+
+# The URL to issue tracker.
+issues: https://gitlab.com/joelwking/semaphore/-/issuesß
