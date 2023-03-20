@@ -1,4 +1,4 @@
-# Demo Instructions
+# Installation Instructions
 
 Notes and instructions for building and running an image for demonstration during the **#Meetup**.
 
@@ -7,7 +7,7 @@ Notes and instructions for building and running an image for demonstration durin
 Build the image by executing the following:
 
 ```shell
-docker build -t joelwking/semaphore:1.0 -f Docerfile.deploy .
+docker build -t joelwking/semaphore:1.0 -f Dockerfile.deploy .
 ```
 
 while substituting the username version in the tag `-t` value above.
@@ -20,7 +20,7 @@ I used Windows 10 to develop and run this code in the VS Code development enviro
 docker run -it -d joelwking/semaphore:1.0
 ```
 
-In the Windoes 10 environment, to connect to the running container to execute the code, you must invoke the `docker exec` command from PowerShell. If you issue the command in the Git bash shell you will encounter the error `docker error on windows : the input device is not a TTY. If you are using mintty, try prefixing the command with 'winpty'`.
+In the Windows 10 environment, to connect to the running container to execute the code, you must invoke the `docker exec` command from PowerShell. If you issue the command in the Git bash shell you will encounter the error `docker error on windows : the input device is not a TTY. If you are using mintty, try prefixing the command with 'winpty'`.
 
 ```text
 powershell

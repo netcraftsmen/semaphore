@@ -23,6 +23,61 @@ The live stream and recorded [presentation](https://www.youtube.com/watch?v=ABMc
 
 To illustrate the concepts of publishing telemetry to Kafka, the telemetry source is the Meraki dashboard API [Loss and Latency](https://developer.cisco.com/meraki/api-v1/#!get-device-loss-and-latency-history) via the Meraki SDK is used in the demonstration code.
 
+## Installation
+
+Installation instructions are documented in `documentation/INSTALLATION.md`.  After cloning the repository,
+
+```shell
+git clone https://github.com/netcraftsmen/semaphore.git
+```
+
+with Docker installed, follow the `documentation/INSTALLATION.md` to build an image and execute on your target cloud platform.
+
+## Usage
+
+The `documentation/INSTALLATION.md` instructions detail updating the environment variables.
+
+### Publisher
+
+Execute the Kafka publisher.
+
+```shell
+# python latency_loss_logging.py -h
+please create and specify the API key, e.g. "export MERAKI_DASHBOARD_API_KEY=12345"
+usage: latency_loss_logging.py [-h] [-a {syslog,kafka,both}]
+
+Demonstration of telemetry logging and publishing
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -a {syslog,kafka,both}, --action {syslog,kafka,both}
+                        action
+```
+
+### Consumer
+
+Execute the Kafka consumer.
+
+```shell
+# python consumer.py -h
+usage: consumer.py [-h] [-g GROUP] [-o {latest,earliest}] [-t TIMEOUT] [-r RANGE] [-v VERBOSE]
+
+Kafka consumer
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -g GROUP, --group GROUP
+                        group ID
+  -o {latest,earliest}, --offset {latest,earliest}
+                        auto.offset.reset
+  -t TIMEOUT, --timeout TIMEOUT
+                        poll timeout (sec)
+  -r RANGE, --range RANGE
+                        number of polling iterations
+  -v VERBOSE, --verbose VERBOSE
+                        output additional info
+```
+
 ## Notes
 
 These notes provide an overview of the terms and concepts of Kafka.
