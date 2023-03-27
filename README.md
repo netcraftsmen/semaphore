@@ -2,6 +2,8 @@
 
 Project name, **Semaphore**: a system of sending messages by holding the arms or two flags or poles in certain positions according to an alphabetic code.
 
+[![published](https://static.production.devnetcloud.com/codeexchange/assets/images/devnet-published.svg)](https://developer.cisco.com/codeexchange/github/repo/netcraftsmen/semaphore)
+
 ## Title
 Introduction to network telemetry using Apache Kafka in Confluent Cloud.
 
