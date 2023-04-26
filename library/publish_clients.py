@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
 #
-#     Copyright (c) 2022
+#     Copyright (c) 2023
 #     All rights reserved.
 #
 #     author: Joel W. King  @joelwking
 #
-#     usage: python3 ./latency_loss_logging.py
+#     usage: python3 ./publish_clients.py
 #
 #     linter: flake8
 #         [flake8]
 #         max-line-length = 160
 #         ignore = E402
 #
-#      references:
-#          https://documentation.meraki.com/MX/Monitoring_and_Reporting/Appliance_Status/MX_Uplink_Settings
 
 import os
 import subprocess
@@ -34,42 +32,40 @@ except ImportError:
     print('Could not import constants!')
     exit(1)
 
-def clients(dashboard):
+def get_clients(dashboard):
     """
     Retrieve all the clients by network and publish to Kafka
     Get all the organizations, the networks in each org, and clients in each network
     Update the client with the network and organization ID and network name.
     """
-
-
     try:
         orgs = dashboard.organizations.getOrganizations()
     except meraki.exceptions.APIError as e:
         print(f'ERROR: {e}')
-        return None
+        return
 
     for org in orgs:
         for network in dashboard.organizations.getOrganizationNetworks(org['id']):
             try:
-                clients = dashboard.networks.getNetworkClients(network['id'], timespan=43200, perPage=1000, total_pages='all')
+                clients = dashboard.networks.getNetworkClients(network['id'], timespan=MERAKI['timespan'], perPage=MERAKI['per_page'], total_pages='all')
             except meraki.exceptions.APIError as e:
                 if e.status in ("404",):
-                    print(f'{network["id"]}, status= {e.status}, reason= {e.reason}, error= {e.message}')
+                    print(f'No clients for {network["id"]}, status= {e.status}, reason= {e.reason}, error= {e.message}')
                     continue
                 else:
                     print(f'ERROR: {e}')
 
-            network_id = dict(organizationId=network['organizationId'], networkName=network['name'])
+            network_name = dict(organizationId=network['organizationId'], networkName=network['name'])
         
             for client in clients:
-                client.update(network_id)
+                client.update(network_name)
 
             kafka(clients, key=network['id'])
     return
 
 def main():
     """
-        Check for the Meraki API key ....
+        Check for the Meraki API key and parse any arguments
     """
     if os.getenv('MERAKI_DASHBOARD_API_KEY', None):
         dashboard = meraki.DashboardAPI(output_log=False, print_console=MERAKI['print_console'])
@@ -79,9 +75,9 @@ def main():
 
     parser = argparse.ArgumentParser(prog='publish_clients.py', description='Publish clients')
     parser.add_argument('-d', '--debug', dest='debug', help='debug', required=False)
-    args = parser.parse_args()
+    args = parser.parse_args()    # TODO
 
-    clients(dashboard)
+    get_clients(dashboard)
 
 if __name__ == '__main__':
     main()

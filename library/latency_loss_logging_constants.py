@@ -10,10 +10,11 @@ import os
 MERAKI = dict(
     target='8.8.8.8',
     firewalls=('MX64',),
-    timespan=119,            # value must be in seconds and be less than or equal to 31 days.
+    timespan=os.environ.get('MERAKI_TIMESPAN', 119),  # value must be in seconds and be less than or equal to 31 days.
     resolution=60,           # valid resolutions are: 60, 600, 3600, 86400. The default is 60.
     uplink='wan1',
     print_console=False,
+    per_page=os.environ.get('MERAKI_PERPAGE', 1000),  # Number of clients per page
     log_file_prefix=__file__[:-13]
 )
 
