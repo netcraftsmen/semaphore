@@ -37,24 +37,35 @@ except ImportError:
 def clients(dashboard):
     """
     Retrieve all the clients by network and publish to Kafka
-    Get all the organizations, the networks in each org, and the devices in each network
+    Get all the organizations, the networks in each org, and clients in each network
+    Update the client with the network and organization ID and network name.
     """
-    response = []
+
 
     try:
         orgs = dashboard.organizations.getOrganizations()
     except meraki.exceptions.APIError as e:
         print(f'ERROR: {e}')
-        return response
+        return None
 
     for org in orgs:
         for network in dashboard.organizations.getOrganizationNetworks(org['id']):
-            devices = dashboard.networks.getNetworkDevices(network['id'])
+            try:
+                clients = dashboard.networks.getNetworkClients(network['id'], timespan=43200, perPage=1000, total_pages='all')
+            except meraki.exceptions.APIError as e:
+                if e.status in ("404",):
+                    print(f'{network["id"]}, status= {e.status}, reason= {e.reason}, error= {e.message}')
+                    continue
+                else:
+                    print(f'ERROR: {e}')
 
-            for device in devices:
-                #### Get Clients and append to the list of clients
-                    response.append(clients)
-    return response
+            network_id = dict(organizationId=network['organizationId'], networkName=network['name'])
+        
+            for client in clients:
+                client.update(network_id)
+
+            kafka(clients, key=network['id'])
+    return
 
 def main():
     """
@@ -70,7 +81,7 @@ def main():
     parser.add_argument('-d', '--debug', dest='debug', help='debug', required=False)
     args = parser.parse_args()
 
-    kafka(clients(dashboard))        # Publish to Kafka
+    clients(dashboard)
 
 if __name__ == '__main__':
     main()
