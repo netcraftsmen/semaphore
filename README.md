@@ -41,6 +41,10 @@ The `documentation/INSTALLATION.md` instructions detail updating the environment
 
 ### Publisher
 
+The use case demonstrated during the Meetup presentation publishes latency and loss information from the Meraki API
+
+#### latency_loss_logging.py
+
 Execute the Kafka publisher.
 
 ```shell
@@ -55,6 +59,23 @@ optional arguments:
   -a {syslog,kafka,both}, --action {syslog,kafka,both}
                         action
 ```
+
+#### publish_clients.py
+
+An additional use case is to publish all clients observed on the networks within the organizations. It uses the `getNetworkClients` SDK method.
+
+```shell
+# python publish_clients.py -h
+usage: publish_clients.py [-h] [-d DEBUG]
+
+Publish clients
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -d DEBUG, --debug DEBUG
+                        debug
+```
+This use case was developed to demonstrate the Event-Driven Ansible client.
 
 ### Consumer
 

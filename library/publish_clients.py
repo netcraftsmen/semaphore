@@ -14,14 +14,9 @@
 #
 
 import os
-import subprocess
-import json
 import argparse
-# from uuid import uuid4
 from confluent_kafka import avro, KafkaError, Producer
 # from confluent_kafka.admin import AdminClient, NewTopic
-
-import certifi
 
 import meraki
 
@@ -32,11 +27,14 @@ except ImportError:
     print('Could not import constants!')
     exit(1)
 
+
 def get_clients(dashboard):
     """
     Retrieve all the clients by network and publish to Kafka
     Get all the organizations, the networks in each org, and clients in each network
-    Update the client with the network and organization ID and network name.
+    Update the client with the organization ID and network name.
+
+    Call the `kafka` method (from latency_loss_logging) to publish.
     """
     try:
         orgs = dashboard.organizations.getOrganizations()
@@ -53,15 +51,21 @@ def get_clients(dashboard):
                     print(f'No clients for {network["id"]}, status= {e.status}, reason= {e.reason}, error= {e.message}')
                     continue
                 else:
-                    print(f'ERROR: {e}')
-
-            network_name = dict(organizationId=network['organizationId'], networkName=network['name'])
-        
+                    raise ValueError(f'ERROR: {e}')
+            
+            records = []
             for client in clients:
-                client.update(network_name)
+                # Update the client record with the name of the network and OrgID
+                client.update(dict(organizationId=network['organizationId'], networkName=network['name']))
+                records.append(client)
 
-            kafka(clients, key=network['id'])
+            # call the Kafka publisher, sending a list with one entry, a dictionary with the key
+            # 'payload' where the value is the the list of clients
+            if records:
+                kafka([dict(payload=records)], key=network['id'])
+
     return
+
 
 def main():
     """
@@ -78,6 +82,7 @@ def main():
     args = parser.parse_args()    # TODO
 
     get_clients(dashboard)
+
 
 if __name__ == '__main__':
     main()
