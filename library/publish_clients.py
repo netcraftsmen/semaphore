@@ -62,7 +62,7 @@ def get_clients(dashboard):
             # call the Kafka publisher, sending a list with one entry, a dictionary with the key
             # 'payload' where the value is the the list of clients
             if records:
-                kafka([dict(payload=records)], key=network['id'])
+                kafka([dict(payload=records, network=network['id'], networkName=network['name'])], key=network['id'])
 
     return
 
