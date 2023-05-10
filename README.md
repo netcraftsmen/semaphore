@@ -77,6 +77,16 @@ optional arguments:
 ```
 This use case was developed to demonstrate the Event-Driven Ansible client.
 
+#### start_publishing.sh
+
+This Bash script invokes a Python (python3) program every 'n' seconds. The program name and the interval are derived from environment variables.
+
+```shell
+export PUBLISHER_TIMER=60
+export PUBLISHER_PROGRAM=./publish_clients.py
+./start_publishing.sh
+```
+
 ### Consumer
 
 Execute the Kafka consumer.
