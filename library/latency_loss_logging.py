@@ -37,9 +37,13 @@ except ImportError:
 def call_back(err, msg):
     """
         Kafka call back handler
+        The msg.key() can be NoneType, which does not decode, throwing an attribute error
     """
     if err is None:
-        print(f"Produced record | topic: {msg.topic()}, partition: [{msg.partition()}], @offset: {msg.offset()} | key: {msg.key().decode('utf-8')}, value: {msg.value()[:50].decode('utf-8')}")
+        try:
+            print(f"Produced record | topic: {msg.topic()}, partition: [{msg.partition()}], @offset: {msg.offset()} | key: {msg.key().decode('utf-8')}, value: {msg.value()[:50].decode('utf-8')}")
+        except AttributeError as e:
+           print(f"Produced record | topic: {msg.topic()}, partition: [{msg.partition()}], @offset: {msg.offset()} | key: {msg.key()}, value: {msg.value()[:50].decode('utf-8')}")
     else:
         print(f"Failed to deliver message: {err}")
 
