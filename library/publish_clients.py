@@ -27,6 +27,7 @@ except ImportError:
     print('Could not import constants!')
     exit(1)
 
+CAMERA = 'camera'
 
 def get_clients(dashboard):
     """
@@ -44,6 +45,8 @@ def get_clients(dashboard):
 
     for org in orgs:
         for network in dashboard.organizations.getOrganizationNetworks(org['id']):
+            if CAMERA in network.get('productTypes', []):
+                continue  # Camera networks have no clients
             try:
                 clients = dashboard.networks.getNetworkClients(network['id'], timespan=MERAKI['timespan'], perPage=MERAKI['per_page'], total_pages='all')
             except meraki.exceptions.APIError as e:
