@@ -15,10 +15,36 @@
 #       >>> result
 #       {'ratio': 100, 'partial': 100}
 #
+#       test = filters.read_filter_configuration('../documentation/filter.json')
+#       valid = None
+#       valid = filters.Conditional(test, dict())
+#       if not valid:
+#          exit(1)
 #       https://pypi.org/project/fuzzywuzzy/
 #
 from fuzzywuzzy import fuzz
 # from fuzzywuzzy import process
+import json
+
+def read_filter_configuration(filename):
+    """
+        Read the input JSON file that defines the filter
+        and return a dictionary to the caller
+    """
+    try:
+        f = open(filename)
+    except (FileNotFoundError, IsADirectoryError) as e:
+        print(f'FileNotFound: {e}')
+        return None
+
+    try:
+        data = json.load(f)
+    except JSONDecoderError as e:
+        print(f'{f.name} {e}')
+
+    print(f'Using {f.name} as filter')
+    return data
+
 
 class Conditional(object):
     """
@@ -39,9 +65,6 @@ class Conditional(object):
     """
 
     def __init__(self, test, data):
-        """
-            Validate inputs
-        """
         assert isinstance(test, dict), f"test must be type dict"
         assert isinstance(data, dict), f"data must be type dict"
         self.ANY = 'any'
@@ -53,6 +76,7 @@ class Conditional(object):
         self.match = self.match.lower()
 
         self.conditions = test.get('conditions')
+        self.number_of_conditions = len(self.conditions)
         self.data = data  # a Dictionary, e.g. {"mac": "26:f5:a2:3c:e4:70", "os": "PlayStation 4"}
 
         return
@@ -67,10 +91,10 @@ class Conditional(object):
                 if self.data[condition['key']] == condition['value']:
                     hits += 1
 
-        if (self.match == self.ALL) & (hits == len(condition)):
+        if (self.match == self.ALL) and (hits == self.number_of_conditions):
             return True
     
-        if (self.match == self.ANY) & (hits > 0):
+        if (self.match == self.ANY) and (hits > 0):
             return True
        
         return False
@@ -83,14 +107,12 @@ class Fuzzy(object):
     """
 
     def __init__(self, a, b):
-    
-        self.result = dict(ratio=0, partial=0)
-        
+        self.result = dict(ratio=0, partial=0)   
         self.a = a
         self.b = b
         return
 
-    def fuzzywuzzy(self):
+    def match(self):
         """
             Execute ratio and partial matches
         """
