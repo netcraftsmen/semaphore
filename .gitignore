@@ -1,5 +1,6 @@
 #
 library/__pycache__/*
+library/filter/__pycache__/*
 .devcontainer/devcontainer.env
 .env/vars
 !.env/README.md
