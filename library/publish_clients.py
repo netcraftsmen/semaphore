@@ -64,6 +64,7 @@ def get_clients(dashboard, filter_config=None):
                     client.update(dict(organizationId=network['organizationId'], networkName=network['name']))
                     # Update the client record with the result of the fuzzy match
                     client.update(filters.Fuzzy('ONE','ONE').compare())
+                    client.update(dict(filter_config=filter_config)
                     records.append(client)
 
             # call the Kafka publisher, sending a list with one entry, a dictionary with the key
