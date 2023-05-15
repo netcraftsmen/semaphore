@@ -29,6 +29,7 @@ except ImportError:
     exit(1)
 
 CAMERA = 'camera'
+FUZZY = 'fuzzy'
 
 def get_clients(dashboard, filter_config=None):
     """
@@ -58,13 +59,15 @@ def get_clients(dashboard, filter_config=None):
                     raise ValueError(f'ERROR: {e}')
             
             records = []
+            # TODO this code needs to move to a method / function
             for client in clients:
                 if filters.Conditional(filter_config, client).compare():
-                    # Update the client record with the name of the network and OrgID
+                    # Update the client record with the name of the network and OrgID and filter configuration
                     client.update(dict(organizationId=network['organizationId'], networkName=network['name']))
-                    # Update the client record with the result of the fuzzy match
-                    client.update(filters.Fuzzy('ONE','ONE').compare())
                     client.update(dict(filter_config=filter_config))
+                    if filter_config.get(FUZZY):
+                        client.update(dict(fuzzy=filters.Fuzzy(filter_config[FUZZY]['value'], 
+                                      client.get(filter_config[FUZZY]['key'])).compare()))
                     records.append(client)
 
             # call the Kafka publisher, sending a list with one entry, a dictionary with the key

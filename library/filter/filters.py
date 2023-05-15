@@ -109,8 +109,8 @@ class Fuzzy(object):
 
     def __init__(self, a, b):
         self.result = dict(ratio=0, partial=0)   
-        self.a = a
-        self.b = b
+        self.a = str(a)
+        self.b = str(b)
         return
 
     def compare(self):
