@@ -43,7 +43,6 @@ def read_filter_configuration(filename):
         print(f'{f.name} {e}')
         return None
 
-    print(f'Using {f.name} as filter')
     return data
 
 

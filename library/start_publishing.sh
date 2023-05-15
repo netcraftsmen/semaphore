@@ -9,10 +9,24 @@
 #
 #      Environment variables:
 #
-#        $PUBLISHER_PROGRAM  program name
-#        $PUBLISHER_TIMER    number of seconds between program iterations
+#        export PUBLISHER_PROGRAM=./publish_clients.py  program name
+#        export PUBLISHER_TIMER=300                     number of seconds between program iterations
+#        export PUBLISHER_FILTER=filter.json            filename of the filter
+#        export PUBLISHER_REPO=https://raw.githubusercontent.com/netcraftsmen/cfic_filters/main/meraki/
 #
-fname=filter.json
-wget https://raw.githubusercontent.com/netcraftsmen/cfic_filters/main/meraki/$fname  -O /tmp/$fname
+if [ -z "$1" ]; then
+    fname=$PUBLISHER_FILTER
+else
+    fname=$1
+fi
+if [ -z "$2" ]; then
+    repo=$PUBLISHER_FILTER
+else
+    repo=$2
+fi
+#
+# Download a the file
+#
+wget $repo$fname  -O /tmp/$fname
 
 while true; do python3 $PUBLISHER_PROGRAM -f /tmp/$fname; sleep $PUBLISHER_TIMER; done

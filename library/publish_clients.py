@@ -108,7 +108,7 @@ def main():
     valid = False
     valid = filters.Conditional(filters.read_filter_configuration(args.filterfname), dict())
     if not valid:
-        print(f'Filter filename no valid or invalid JSON {args.filterfname}')
+        print(f'Filter filename not valid or invalid JSON {args.filterfname}')
         exit(1)
 
     get_clients(dashboard, filter_config=filters.read_filter_configuration(args.filterfname))
