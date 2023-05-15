@@ -66,8 +66,8 @@ def get_clients(dashboard, filter_config=None):
                     client.update(dict(organizationId=network['organizationId'], networkName=network['name']))
                     client.update(dict(filter_config=filter_config))
                     if filter_config.get(FUZZY):
-                        client.update(dict(fuzzy=filters.Fuzzy(filter_config[FUZZY]['value'], 
-                                      client.get(filter_config[FUZZY]['key'])).compare()))
+                        client.update(filters.Fuzzy(filter_config[FUZZY]['value'], 
+                                      client.get(filter_config[FUZZY]['key'])).compare())
                     records.append(client)
 
             # call the Kafka publisher, sending a list with one entry, a dictionary with the key
