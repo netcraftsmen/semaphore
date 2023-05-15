@@ -20,7 +20,7 @@ else
     fname=$1
 fi
 if [ -z "$2" ]; then
-    repo=$PUBLISHER_FILTER
+    repo=$PUBLISHER_REPO
 else
     repo=$2
 fi
