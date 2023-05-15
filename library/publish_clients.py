@@ -59,16 +59,11 @@ def get_clients(dashboard, filter_config=None):
                     raise ValueError(f'ERROR: {e}')
             
             records = []
-            # TODO this code needs to move to a method / function
             for client in clients:
-                if filters.Conditional(filter_config, client).compare():
-                    # Update the client record with the name of the network and OrgID and filter configuration
-                    client.update(dict(organizationId=network['organizationId'], networkName=network['name']))
-                    client.update(dict(filter_config=filter_config))
-                    if filter_config.get(FUZZY):
-                        client.update(filters.Fuzzy(filter_config[FUZZY]['value'], 
-                                      client.get(filter_config[FUZZY]['key'])).compare())
-                    records.append(client)
+                selected = select_client_records(filter_config, client)
+                if selected:
+                    selected.update(dict(organizationId=network['organizationId'], networkName=network['name']))
+                    records.append(selected)
 
             # call the Kafka publisher, sending a list with one entry, a dictionary with the key
             # 'payload' where the value is the the list of clients
@@ -77,6 +72,24 @@ def get_clients(dashboard, filter_config=None):
 
     return
 
+def select_client_records(filter_config, client):
+    """
+        Return an updated client record if it meets the selection criteria
+    """
+    client.update(dict(filter_config=filter_config))
+    client.update(dict(conditional_match=filters.Conditional(filter_config, client).compare()))
+
+    # If the user asks for a fuzzy match, we always return the record
+    if filter_config.get(FUZZY):
+        result = filters.Fuzzy(filter_config[FUZZY]['value'], client.get(filter_config[FUZZY]['key'])).compare())
+        client.update(result)
+        return client
+    
+    if client['conditional_match']:
+        return client
+    
+    return False
+    
 
 def main():
     """
