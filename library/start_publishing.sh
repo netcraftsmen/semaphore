@@ -12,6 +12,7 @@
 #        $PUBLISHER_PROGRAM  program name
 #        $PUBLISHER_TIMER    number of seconds between program iterations
 #
-wget https://raw.githubusercontent.com/netcraftsmen/cfic_filters/main/meraki/filter.json /tmp/filter.json -O /tmp/filter.json
+fname = filter.json
+wget https://raw.githubusercontent.com/netcraftsmen/cfic_filters/main/meraki/$fname  -O /tmp/$fname
 
-while true; do python3 $PUBLISHER_PROGRAM; sleep $PUBLISHER_TIMER; done
+while true; do python3 $PUBLISHER_PROGRAM -f /tmp/$fname; sleep $PUBLISHER_TIMER; done
