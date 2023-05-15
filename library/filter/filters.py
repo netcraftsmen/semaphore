@@ -65,8 +65,8 @@ class Conditional(object):
     >>> filters.Conditional(test, data).match()
     """
 
-    def __init__(self, filter, data):
-        assert isinstance(test, dict), f"filter must be type dict"
+    def __init__(self, filter_config, data):
+        assert isinstance(filter_config, dict), f"filter configuration must be type dict"
         assert isinstance(data, dict), f"data must be type dict"
         self.ANY = 'any'
         self.ALL = 'all'
