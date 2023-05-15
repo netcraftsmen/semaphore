@@ -11,7 +11,7 @@
 #
 #     usage:
 #       >>> from filter import filters
-#       >>> result = filters.Fuzzy('ONE','ONE').fuzzywuzzy()
+#       >>> result = filters.Fuzzy('ONE','ONE').match()
 #       >>> result
 #       {'ratio': 100, 'partial': 100}
 #
@@ -41,6 +41,7 @@ def read_filter_configuration(filename):
         data = json.load(f)
     except JSONDecoderError as e:
         print(f'{f.name} {e}')
+        return None
 
     print(f'Using {f.name} as filter')
     return data
@@ -118,5 +119,5 @@ class Fuzzy(object):
         """
         self.result['ratio'] = fuzz.ratio(self.a, self.b)
         self.result['partial'] = fuzz.partial_ratio(self.a, self.b)
-        return self.result
+        return dict(fuzzy=self.result)
     

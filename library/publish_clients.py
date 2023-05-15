@@ -23,13 +23,14 @@ import meraki
 try:
     from latency_loss_logging_constants import MERAKI, LOGGING, SCHEMA_CONF, PRODUCER_CONF, PRODUCER_ARGS
     from latency_loss_logging import call_back, kafka
+    from filter import filters
 except ImportError:
-    print('Could not import constants!')
+    print('import error!')
     exit(1)
 
 CAMERA = 'camera'
 
-def get_clients(dashboard):
+def get_clients(dashboard, filter=None):
     """
     Retrieve all the clients by network and publish to Kafka
     Get all the organizations, the networks in each org, and clients in each network
@@ -58,9 +59,12 @@ def get_clients(dashboard):
             
             records = []
             for client in clients:
-                # Update the client record with the name of the network and OrgID
-                client.update(dict(organizationId=network['organizationId'], networkName=network['name']))
-                records.append(client)
+                if filters.Conditional(filter, client).match():
+                    # Update the client record with the name of the network and OrgID
+                    client.update(dict(organizationId=network['organizationId'], networkName=network['name']))
+                    # Update the client record with the result of the fuzzy match
+                    client.update(filters.Fuzzy('ONE','ONE').match())
+                    records.append(client)
 
             # call the Kafka publisher, sending a list with one entry, a dictionary with the key
             # 'payload' where the value is the the list of clients
@@ -81,10 +85,16 @@ def main():
         print('please create and specify the API key, e.g. "export MERAKI_DASHBOARD_API_KEY=12345"')
 
     parser = argparse.ArgumentParser(prog='publish_clients.py', description='Publish clients')
-    parser.add_argument('-d', '--debug', dest='debug', help='debug', required=False)
-    args = parser.parse_args()    # TODO
+    parser.add_argument('-f', '--filter', dest='filterfname', help='filter filename', required=False)
+    args = parser.parse_args()
+    
+    valid = False
+    valid = filters.Conditional(filters.read_filter_configuration(args.filterfname), dict())
+    if not valid:
+        print(f'Filter filename no valid or invalid JSON {args.filterfname}')
+        exit(1)
 
-    get_clients(dashboard)
+    get_clients(dashboard, filter=filters.read_filter_configuration(args.filterfname))
 
 
 if __name__ == '__main__':
