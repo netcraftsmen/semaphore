@@ -65,24 +65,24 @@ class Conditional(object):
     >>> filters.Conditional(test, data).match()
     """
 
-    def __init__(self, test, data):
-        assert isinstance(test, dict), f"test must be type dict"
+    def __init__(self, filter, data):
+        assert isinstance(test, dict), f"filter must be type dict"
         assert isinstance(data, dict), f"data must be type dict"
         self.ANY = 'any'
         self.ALL = 'all'
 
-        self.match = test.get('match')
+        self.match = filter.get('match')
         assert isinstance(self.match, str), f"'match' must be of type string"
         assert self.match in (self.ANY, self.ALL), f"'match' must be either 'any' or 'all', not '{self.match}'!"
         self.match = self.match.lower()
 
-        self.conditions = test.get('conditions')
+        self.conditions = filter.get('conditions')
         self.number_of_conditions = len(self.conditions)
         self.data = data  # a Dictionary, e.g. {"mac": "26:f5:a2:3c:e4:70", "os": "PlayStation 4"}
 
         return
     
-    def match(self):
+    def compare(self):
         """
             Compare the two dictionaries to determine if there is a match, return True of False
         """
@@ -113,7 +113,7 @@ class Fuzzy(object):
         self.b = b
         return
 
-    def match(self):
+    def compare(self):
         """
             Execute ratio and partial matches
         """

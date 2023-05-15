@@ -30,7 +30,7 @@ except ImportError:
 
 CAMERA = 'camera'
 
-def get_clients(dashboard, filter=None):
+def get_clients(dashboard, filter_config=None):
     """
     Retrieve all the clients by network and publish to Kafka
     Get all the organizations, the networks in each org, and clients in each network
@@ -59,11 +59,11 @@ def get_clients(dashboard, filter=None):
             
             records = []
             for client in clients:
-                if filters.Conditional(filter, client).match():
+                if filters.Conditional(filter_config, client).compare():
                     # Update the client record with the name of the network and OrgID
                     client.update(dict(organizationId=network['organizationId'], networkName=network['name']))
                     # Update the client record with the result of the fuzzy match
-                    client.update(filters.Fuzzy('ONE','ONE').match())
+                    client.update(filters.Fuzzy('ONE','ONE').compare())
                     records.append(client)
 
             # call the Kafka publisher, sending a list with one entry, a dictionary with the key
@@ -94,7 +94,7 @@ def main():
         print(f'Filter filename no valid or invalid JSON {args.filterfname}')
         exit(1)
 
-    get_clients(dashboard, filter=filters.read_filter_configuration(args.filterfname))
+    get_clients(dashboard, filter_config=filters.read_filter_configuration(args.filterfname))
 
 
 if __name__ == '__main__':
