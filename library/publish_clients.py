@@ -81,7 +81,7 @@ def select_client_records(filter_config, client):
 
     # If the user asks for a fuzzy match, we always return the record
     if filter_config.get(FUZZY):
-        result = filters.Fuzzy(filter_config[FUZZY]['value'], client.get(filter_config[FUZZY]['key'])).compare())
+        result = filters.Fuzzy(filter_config[FUZZY]['value'], client.get(filter_config[FUZZY]['key'])).compare()
         client.update(result)
         return client
     
