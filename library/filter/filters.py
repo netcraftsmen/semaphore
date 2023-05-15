@@ -71,12 +71,12 @@ class Conditional(object):
         self.ANY = 'any'
         self.ALL = 'all'
 
-        self.match = filter.get('match')
+        self.match = filter_config.get('match')
         assert isinstance(self.match, str), f"'match' must be of type string"
         assert self.match in (self.ANY, self.ALL), f"'match' must be either 'any' or 'all', not '{self.match}'!"
         self.match = self.match.lower()
 
-        self.conditions = filter.get('conditions')
+        self.conditions = filter_config.get('conditions')
         self.number_of_conditions = len(self.conditions)
         self.data = data  # a Dictionary, e.g. {"mac": "26:f5:a2:3c:e4:70", "os": "PlayStation 4"}
 
