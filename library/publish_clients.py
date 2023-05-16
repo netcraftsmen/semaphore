@@ -76,6 +76,10 @@ def select_client_records(filter_config, client):
     """
         Return an updated client record if it meets the selection criteria
     """
+
+    if not filter_config:
+        return client
+    
     client.update(dict(filter_config=filter_config))
     client.update(dict(conditional_match=filters.Conditional(filter_config, client).compare()))
 
@@ -105,14 +109,19 @@ def main():
     parser.add_argument('-f', '--filter', dest='filterfname', help='filter filename', required=False)
     args = parser.parse_args()
     
-    valid = False
-    valid = filters.Conditional(filters.read_filter_configuration(args.filterfname), dict())
-    if not valid:
-        print(f'Filter filename not valid or invalid JSON {args.filterfname}')
-        exit(1)
+    filter_config = filters.read_filter_configuration(args.filterfname)
 
-    get_clients(dashboard, filter_config=filters.read_filter_configuration(args.filterfname))
-
+    if filter_config:
+        try:
+            filters.Conditional(filter_config, dict())  # Verify the filter config is valid
+            get_clients(dashboard, filter_config=filter_config)
+        except AssertionError as e:
+            print(f'{args.filterfname} {e}')            # Filter configuration not valid
+            return
+    else:
+        print('No filter applied, processing all clients')
+        get_clients(dashboard)
+    
 
 if __name__ == '__main__':
     main()

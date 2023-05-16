@@ -31,6 +31,9 @@ def read_filter_configuration(filename):
         Read the input JSON file that defines the filter
         and return a dictionary to the caller
     """
+    if not filename:
+        return None
+    
     try:
         f = open(filename)
     except (FileNotFoundError, IsADirectoryError) as e:
@@ -39,8 +42,8 @@ def read_filter_configuration(filename):
 
     try:
         data = json.load(f)
-    except JSONDecoderError as e:
-        print(f'{f.name} {e}')
+    except:
+        print(f'Error loading JSON data from {f.name}')
         return None
 
     return data
@@ -65,8 +68,8 @@ class Conditional(object):
     """
 
     def __init__(self, filter_config, data):
-        assert isinstance(filter_config, dict), f"filter configuration must be type dict"
-        assert isinstance(data, dict), f"data must be type dict"
+        assert isinstance(filter_config, dict), "filter configuration must be type dict"
+        assert isinstance(data, dict), "data must be type dict"
         self.ANY = 'any'
         self.ALL = 'all'
 
