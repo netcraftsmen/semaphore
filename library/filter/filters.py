@@ -10,30 +10,26 @@
 #     description: Event filters
 #
 #     usage:
-#       >>> from filter import filters
-#       >>> result = filters.Fuzzy('ONE','ONE').match()
-#       >>> result
-#       {'ratio': 100, 'partial': 100}
 #
-#       test = filters.read_filter_configuration('../documentation/filter.json')
-#       valid = None
-#       valid = filters.Conditional(test, dict())
-#       if not valid:
-#          exit(1)
 #       https://pypi.org/project/fuzzywuzzy/
 #
 from fuzzywuzzy import fuzz
 # from fuzzywuzzy import process
 import json
 
+
 def read_filter_configuration(filename):
+    """Read the input JSON file that defines the filter
+
+    Args:
+        filename (str): File name (or None) containing the JSON formatted filter
+    Returns:
+        None or the dictionary representing the filter
     """
-        Read the input JSON file that defines the filter
-        and return a dictionary to the caller
-    """
+
     if not filename:
         return None
-    
+ 
     try:
         f = open(filename)
     except (FileNotFoundError, IsADirectoryError) as e:
@@ -50,21 +46,25 @@ def read_filter_configuration(filename):
 
 
 class Conditional(object):
-    """
+    """Conditional definition to match against the data
 
-    Input: conditional to test against the data
-        {
-            "match": "any",
-            "conditions": [
-            {"key": "mac", "value": "26:f5:a2:3c:e4:70"},
-            {"key": "os", "value": "PlayStation 4"}
-            ]
-        }
-    >>> from filter import filters
-    >>> test = dict(conditions=[{"key": "mac", "value": "26:f5:a2:3c:e4:70"}, {"key": "os", "value": "PlayStation 4"}])
-    >>> test['match']='any'
-    >>> data = {"mac": "26:f5:a2:3c:e4:70", "os": "PlayStation 4"}
-    >>> filters.Conditional(test, data).match()
+    Args:
+        filter_config: (dict): configuration of the filter, example
+                                {
+                                    "match": "any",
+                                    "conditions": [
+                                    {"key": "mac", "value": "26:f5:a2:3c:e4:70"},
+                                    {"key": "os", "value": "PlayStation 4"}
+                                    ]
+                                }
+        data: (dict) : Data returned from an API call, for example
+                                {
+                                    "os": "PlayStation 4",
+                                    "ip6": null,
+                                    "mac": "b0:05:94:24:0f:d7",
+                                }
+    Returns:
+        None:  __init__ validates the input data via assertions
     """
 
     def __init__(self, filter_config, data):
@@ -83,10 +83,9 @@ class Conditional(object):
         self.data = data  # a Dictionary, e.g. {"mac": "26:f5:a2:3c:e4:70", "os": "PlayStation 4"}
 
         return
-    
+
     def compare(self):
-        """
-            Compare the two dictionaries to determine if there is a match, return True of False
+        """Compare the two dictionaries to determine if there is a match, return True of False
         """
         hits = 0
         for condition in self.conditions:
@@ -103,10 +102,13 @@ class Conditional(object):
         return False
 
 class Fuzzy(object):
-    """
-        Use Fuzzywuzzy to determine credibility
-        Input: two strings to be compared
-        Returns: dict of the match confidence
+    """Use Fuzzywuzzy to determine credibility
+
+    Args: 
+        a (str): first string
+        b (str): second string
+
+    Returns: Dictionary of the match confidence intervals
     """
 
     def __init__(self, a, b):
@@ -116,8 +118,10 @@ class Fuzzy(object):
         return
 
     def compare(self):
-        """
-            Execute ratio and partial matches
+        """Execute ratio and partial matches
+
+        Returns:
+          Dictionary of the results
         """
         self.result['ratio'] = fuzz.ratio(self.a, self.b)
         self.result['partial'] = fuzz.partial_ratio(self.a, self.b)

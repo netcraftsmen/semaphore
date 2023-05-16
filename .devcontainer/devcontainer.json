@@ -26,6 +26,7 @@
 		"ms-python.python",
 		"ms-python.vscode-pylance",
 		"ban.spellright",
+		"njpwerner.autodocstring",
 		"ms-python.flake8"
 	],
 	
