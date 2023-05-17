@@ -28,7 +28,6 @@ except ImportError:
     print('import error!')
     exit(1)
 
-CAMERA = 'camera'
 FUZZY = 'fuzzy'
 
 def get_clients(dashboard, filter_config=None):
@@ -47,13 +46,11 @@ def get_clients(dashboard, filter_config=None):
 
     for org in orgs:
         for network in dashboard.organizations.getOrganizationNetworks(org['id']):
-            if CAMERA in network.get('productTypes', []):
-                continue  # Camera networks have no clients
             try:
                 clients = dashboard.networks.getNetworkClients(network['id'], timespan=MERAKI['timespan'], perPage=MERAKI['per_page'], total_pages='all')
             except meraki.exceptions.APIError as e:
-                if e.status in ("404",):
-                    print(f'No clients for {network["id"]}, status= {e.status}, reason= {e.reason}, error= {e.message}')
+                if e.status in (404, 400):
+                    print(f'No clients for {network["id"]}, status={e.status}, reason={e.reason}, error={e.message}')
                     continue
                 else:
                     raise ValueError(f'ERROR: {e}')
