@@ -54,7 +54,7 @@ def get_clients(dashboard, filter_config=None):
                     continue
                 else:
                     raise ValueError(f'ERROR: {e}')
-            
+       
             records = []
             for client in clients:
                 selected = select_client_records(filter_config, client)
@@ -76,7 +76,7 @@ def select_client_records(filter_config, client):
 
     if not filter_config:
         return client
-    
+
     client.update(dict(filter_config=filter_config))
     client.update(dict(conditional_match=filters.Conditional(filter_config, client).compare()))
 
@@ -85,12 +85,12 @@ def select_client_records(filter_config, client):
         result = filters.Fuzzy(filter_config[FUZZY]['value'], client.get(filter_config[FUZZY]['key'])).compare()
         client.update(result)
         return client
-    
+
     if client['conditional_match']:
         return client
-    
+
     return False
-    
+
 
 def main():
     """
@@ -105,7 +105,7 @@ def main():
     parser = argparse.ArgumentParser(prog='publish_clients.py', description='Publish clients')
     parser.add_argument('-f', '--filter', dest='filterfname', help='filter filename', required=False)
     args = parser.parse_args()
-    
+
     filter_config = filters.read_filter_configuration(args.filterfname)
 
     if filter_config:
@@ -118,7 +118,7 @@ def main():
     else:
         print('No filter applied, processing all clients')
         get_clients(dashboard)
-    
+  
 
 if __name__ == '__main__':
     main()
